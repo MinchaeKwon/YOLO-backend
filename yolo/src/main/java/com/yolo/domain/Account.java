@@ -25,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 //@DynamicInsert
 public class Account implements UserDetails {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(updatable = false)
 	private long accountId;
 	
