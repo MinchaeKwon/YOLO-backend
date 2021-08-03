@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/yolo")
+//@RequestMapping("/yolo")
 public class AccountController {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
