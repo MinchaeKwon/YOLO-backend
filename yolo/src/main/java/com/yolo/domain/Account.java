@@ -27,7 +27,7 @@ public class Account implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(updatable = false)
-	private long accountId;
+	private long id;
 	
 	@Column(name="email", nullable=false)
 	private String email;

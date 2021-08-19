@@ -58,7 +58,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 		return accountRepository.save(Account.builder().email(infoDto.getEmail()).type(infoDto.getType())
 				.password(infoDto.getPassword()).auth(infoDto.getAuth()).nickname(infoDto.getNickname())
-				.phonenumber(infoDto.getPhonenumber()).build()).getAccountId();
+				.phonenumber(infoDto.getPhonenumber()).build()).getId();
 	}
 
 	// 이메일 중복 확인
@@ -81,7 +81,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 		Account updateAccount = (Account) loadUserByEmailAndType(account.getEmail(), account.getType());
 		
 		updateAccount.update(infoDto);
-		return accountRepository.save(updateAccount).getAccountId();
+		return accountRepository.save(updateAccount).getId();
 	}
 
 }
