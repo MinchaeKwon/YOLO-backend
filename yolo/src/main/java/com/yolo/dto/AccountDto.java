@@ -1,4 +1,4 @@
-package com.yolo.domain;
+package com.yolo.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,5 +10,11 @@ public class AccountDto {
 	private String password;
 	private String auth;
 	private String nickname;
-	private String phonenumber;
+	
+	@Getter
+	public static class Profile {
+		private String email;
+		private String type;
+		private String nickname;
+	}
 }

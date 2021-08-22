@@ -10,9 +10,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yolo.domain.Account;
-import com.yolo.domain.AccountDto;
-import com.yolo.domain.AccountUpdateDto;
+import com.yolo.dto.AccountDto;
+import com.yolo.dto.AccountUpdateDto;
+import com.yolo.entity.Account;
 import com.yolo.repository.AccountRepository;
 import com.yolo.response.SocialUserNotFoundException;
 
@@ -57,8 +57,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 		infoDto.setPassword(encoder.encode(infoDto.getPassword()));
 
 		return accountRepository.save(Account.builder().email(infoDto.getEmail()).type(infoDto.getType())
-				.password(infoDto.getPassword()).auth(infoDto.getAuth()).nickname(infoDto.getNickname())
-				.phonenumber(infoDto.getPhonenumber()).build()).getId();
+				.password(infoDto.getPassword()).auth(infoDto.getAuth()).nickname(infoDto.getNickname()).build()).getId();
 	}
 
 	// 이메일 중복 확인

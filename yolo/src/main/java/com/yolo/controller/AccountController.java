@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.yolo.domain.Account;
-import com.yolo.domain.AccountDto;
-import com.yolo.domain.AccountUpdateDto;
+import com.yolo.dto.AccountDto;
+import com.yolo.dto.AccountUpdateDto;
+import com.yolo.entity.Account;
 import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
 import com.yolo.response.SocialUserNotFoundException;
