@@ -71,8 +71,10 @@ public class JwtUserDetailsService implements UserDetailsService {
 	}
 	
 	// 특정 사용자의 accountId로 사용자 정보 가져오기
-	public Account loadUserById(long id) throws UsernameNotFoundException {
-		return accountRepository.findById(id).orElseThrow();
+	public AccountDto.Profile loadUserById(long id) throws UsernameNotFoundException {
+		Account account = accountRepository.findById(id).orElseThrow();
+		AccountDto.Profile result = new AccountDto.Profile(account.getEmail(), account.getType(), account.getNickname());
+		return result;
 	}
 
 	// 회원정보 수정
