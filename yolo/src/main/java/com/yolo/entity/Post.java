@@ -27,6 +27,12 @@ public class Post {
 	@Column(name="imageUrl")
 	private String imageUrl;
 	
+	@Column(name="latitude")
+	private double latitude;
+	
+	@Column(name="longitude")
+	private double longitude;
+	
 	@Column(name="createAt")
 	@CreationTimestamp
 	private LocalDateTime createAt;
@@ -40,12 +46,17 @@ public class Post {
 	private Account account;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
+	private List<RecommendPost> recommend;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
 	private List<Comment> comment;
 	
 	@Builder
-	public Post(String content, String imageUrl, Account account) {
+	public Post(String content, String imageUrl, double latitude, double longitude , Account account) {
 		this.content = content;
 		this.imageUrl = imageUrl;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.account = account;
 	}
 }
