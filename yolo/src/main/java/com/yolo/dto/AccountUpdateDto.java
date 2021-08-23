@@ -1,4 +1,4 @@
-package com.yolo.domain;
+package com.yolo.dto;
 
 import lombok.Getter;
 import lombok.Setter;

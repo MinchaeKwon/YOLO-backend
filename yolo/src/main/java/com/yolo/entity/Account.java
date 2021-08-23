@@ -1,4 +1,4 @@
-package com.yolo.domain;
+package com.yolo.entity;
 
 import lombok.*;
 
@@ -16,6 +16,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.yolo.dto.AccountUpdateDto;
 
 @Entity
 @Table(name="account", uniqueConstraints={@UniqueConstraint(columnNames={"email", "type"})})
@@ -46,9 +48,6 @@ public class Account implements UserDetails {
 	@Column(name="nickname", unique=true, nullable=false)
 	private String nickname;
 	
-	@Column(name="phonenumber", nullable=false)
-	private String phonenumber;
-	
 	@Column(name="createAt")
 	@CreationTimestamp
 	private LocalDateTime createAt;
@@ -58,19 +57,16 @@ public class Account implements UserDetails {
 	private LocalDateTime updateAt;
 	
 	@Builder
-	public Account(String email, String type, String password, String auth, String nickname, String phonenumber, LocalDateTime createAt) {
+	public Account(String email, String type, String password, String auth, String nickname) {
 		this.email = email;
 		this.type = type;
 		this.password = password;
 		this.auth = auth;
 		this.nickname = nickname;
-		this.phonenumber = phonenumber;
-		this.createAt = createAt;
 	}
 	
 	public void update(AccountUpdateDto infoDto) {
 		this.nickname = infoDto.getNickname();
-		this.phonenumber = infoDto.getPhonenumber();
 	}
 
 	@Override
