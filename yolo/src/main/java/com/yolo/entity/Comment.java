@@ -38,10 +38,15 @@ public class Comment {
 	@JoinColumn(name="account_id")
 	private Account account;
 	
+	@ManyToOne
+	@JoinColumn(name="post_id")
+	private Post post;
+	
 	@Builder
-	public Comment(String content, String imageUrl, Account account) {
+	public Comment(String content, String imageUrl, Account account, Post post) {
 		this.content = content;
 		this.imageUrl = imageUrl;
 		this.account = account;
+		this.post = post;
 	}
 }
