@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class JwtRequest {
 
-    private String email;
-    private String password;
+    private String socialId;
     private String type;
 }

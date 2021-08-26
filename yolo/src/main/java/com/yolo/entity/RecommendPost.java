@@ -5,7 +5,7 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="community_post")
+@Table(name="recommend_post", uniqueConstraints={@UniqueConstraint(columnNames={"post_id", "account_id"})})
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor

@@ -9,14 +9,11 @@ import com.yolo.entity.Account;
 
 @Repository
 public interface AccountRepository  extends JpaRepository<Account, Long> {
-	// 특정 이메일, 로그인 타입에 해당하는 회원이 있는지 확인
-	Optional<Account> findByEmailAndType(String email, String type);
+	// SocialId, 로그인 타입에 해당하는 회원이 있는지 확인
+	Optional<Account> findBySocialIdAndType(String socialId, String type);
 	
-	// 특정 이메일에 해당하는 회원이 있는지 확인
-	Optional<Account> findByEmail(String email);
-	
-	// 이메일 중복 확인
-	Boolean existsByEmail(String email);
+	// SocialId에 해당하는 회원이 있는지 확인
+	Optional<Account> findBySocialId(String socialId);
 	
 	// 닉네임 중복 확인
 	Boolean existsByNickname(String nickname);

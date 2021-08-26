@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter @Setter
 public class AccountUpdateDto {
 	private String nickname;
-	private String phonenumber;
+	private String imageUrl;
 }

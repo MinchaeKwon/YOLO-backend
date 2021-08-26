@@ -9,11 +9,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountDto {
-	private String email;
+	private String socialId;
 	private String type;
-	private String password;
-	private String auth;
 	private String nickname;
+	private String imageUrl;
 	
 	@Getter
 	@NoArgsConstructor
@@ -22,5 +21,6 @@ public class AccountDto {
 		private String email;
 		private String type;
 		private String nickname;
+		private String imageUrl;
 	}
 }

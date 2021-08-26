@@ -9,9 +9,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,29 +22,28 @@ import com.yolo.dto.AccountUpdateDto;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@DynamicInsert
 public class Account implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(updatable = false)
 	private long id;
 	
-	@Column(name="email", nullable=false)
-	private String email;
+	// 소셜 로그인하고 받아오는 고유한 id
+	@Column(name="social_id", nullable=false)
+	private String socialId;
 	
-	// 일반 - normal, 소셜 - kakao, google, naver
+	// 소셜 로그인 타입 - kakao, naver
 	@Column(name="type", nullable=false)
 	private String type;
 	
-	@Column(name="password")
-	private String password;
-	
 	@Column(name="auth")
-//	@ColumnDefault("ROLE_USER")
 	private String auth;
 	
 	@Column(name="nickname", unique=true, nullable=false)
 	private String nickname;
+	
+	@Column(name="imageUrl")
+	private String imageUrl;
 	
 	@Column(name="createAt")
 	@CreationTimestamp
@@ -57,16 +54,17 @@ public class Account implements UserDetails {
 	private LocalDateTime updateAt;
 	
 	@Builder
-	public Account(String email, String type, String password, String auth, String nickname) {
-		this.email = email;
+	public Account(String socialId, String type, String auth, String nickname, String imageUrl) {
+		this.socialId = socialId;
 		this.type = type;
-		this.password = password;
 		this.auth = auth;
 		this.nickname = nickname;
+		this.imageUrl = imageUrl;
 	}
 	
 	public void update(AccountUpdateDto infoDto) {
 		this.nickname = infoDto.getNickname();
+		this.imageUrl = infoDto.getImageUrl();
 	}
 
 	@Override
@@ -81,13 +79,14 @@ public class Account implements UserDetails {
 	// 사용자의 id를 반환 (unique한 값)
     @Override
     public String getUsername() {
-        return email;
+        return socialId;
     }
 
-    // 사용자의 password를 반환
+    // 사용자의 password를 반환 -> password 사용하지 않기 때문에 null 반환
     @Override
     public String getPassword() {
-        return password;
+//        return password;
+    	return null;
     }
 
     // 계정 만료 여부 반환
