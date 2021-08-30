@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
 import com.yolo.entity.Post;
-import com.yolo.entity.RecommendPost;
+import com.yolo.entity.LikePost;
 import com.yolo.repository.CommentRepository;
 import com.yolo.repository.PostRepository;
-import com.yolo.repository.RecommendPostRepository;
+import com.yolo.repository.LikePostRepository;
 
 @Service
 public class PostService {
@@ -24,7 +24,7 @@ public class PostService {
 	PostRepository postRepo;
 	
 	@Autowired
-	RecommendPostRepository recommendPostRepo;
+	LikePostRepository likePostRepo;
 	
 	@Autowired
 	CommentRepository commtRepo;
@@ -53,12 +53,12 @@ public class PostService {
 				isAuthor = true;
 			}
 			
-			boolean isRecommended = recommendPostRepo.existsByPostAndAccount(post, account); // 게시글 추천했는지 확인
+			boolean isLiked = likePostRepo.existsByPostAndAccount(post, account); // 게시글 추천했는지 확인
 			String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 			
 			result.add(new PostDto.Detail(post_account.getNickname(), post_account.getImageUrl(), 
 					post.getContent(), post.getImageUrl(), post.getLatitude(), post.getLongitude(), 
-					createAt, isAuthor, isRecommended, cntOfRecommend, cntOfComment));
+					createAt, isAuthor, isLiked, cntOfRecommend, cntOfComment));
 		}
 		
 		
@@ -70,6 +70,23 @@ public class PostService {
 	@Transactional
 	public void deletePost(Long post_id) {
 		postRepo.deleteById(post_id);
+	}
+	
+	// 게시글 좋아요
+	@Transactional
+	public boolean addRecommend(Long id, Account account) {
+		Post post = postRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+
+		boolean isExist = likePostRepo.existsByPostAndAccount(post, account);
+
+		if (isExist) {
+			return false;
+		}
+
+		LikePost recommend = LikePost.builder().post(post).account(account).build();
+		likePostRepo.save(recommend);
+
+		return true;
 	}
 	
 }

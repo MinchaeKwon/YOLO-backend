@@ -18,7 +18,7 @@ public class PostDto {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Detail {
-		private String authorNickname;
+		private String nickname;
 		private String authorImage;
 		private String content;
 		private String imageUrl;
@@ -26,8 +26,8 @@ public class PostDto {
 		private double longitude;
 		private String createAt;
 		private boolean isAuthor;
-		private boolean isRecommended;
+		private boolean isLiked;
 		private int cntOfComment;
-		private int cntOfRecommend;
+		private int cntOfLike;
 	}
 }
