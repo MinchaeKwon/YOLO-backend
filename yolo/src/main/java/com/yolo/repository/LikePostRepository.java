@@ -12,4 +12,5 @@ public interface LikePostRepository extends JpaRepository<LikePost, Long> {
 	// 특정 게시글의 추천 개수 가져오기
 	int countByPost(Post post);
 	boolean existsByPostAndAccount(Post post, Account account);
+	int deleteByPostAndAccount(Post post, Account account);
 }

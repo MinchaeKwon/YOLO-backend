@@ -43,7 +43,7 @@ public class PostService {
 		
 		for (Post post : postList) {
 			int cntOfRecommend = post.getRecommend().size(); // 댓글 개수
-			int cntOfComment = post.getComment().size(); // 게시글 추천 개수
+			int cntOfComment = post.getComment().size(); // 게시글 좋아요 개수
 			
 			Account post_account = post.getAccount();
 			boolean isAuthor = false;
@@ -74,8 +74,8 @@ public class PostService {
 	
 	// 게시글 좋아요
 	@Transactional
-	public boolean addRecommend(Long id, Account account) {
-		Post post = postRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+	public boolean addLike(Long post_id, Account account) {
+		Post post = postRepo.findById(post_id).orElseThrow(EntityNotFoundException::new);
 
 		boolean isExist = likePostRepo.existsByPostAndAccount(post, account);
 
@@ -83,10 +83,24 @@ public class PostService {
 			return false;
 		}
 
-		LikePost recommend = LikePost.builder().post(post).account(account).build();
-		likePostRepo.save(recommend);
+		LikePost like = LikePost.builder().post(post).account(account).build();
+		likePostRepo.save(like);
 
 		return true;
+	}
+	
+	// 게시글 좋아요 취소
+	@Transactional
+	public boolean deleteLike(Long post_id, Account account) {
+		Post post = postRepo.findById(post_id).orElseThrow(EntityNotFoundException::new);
+
+		int delete = likePostRepo.deleteByPostAndAccount(post, account);
+
+		if (delete == 1) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }
