@@ -1,6 +1,8 @@
 package com.yolo.service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
 import com.yolo.entity.Post;
+import com.yolo.entity.RecommendPost;
 import com.yolo.repository.CommentRepository;
 import com.yolo.repository.PostRepository;
 import com.yolo.repository.RecommendPostRepository;
@@ -33,27 +36,30 @@ public class PostService {
 				.latitude(info.getLatitude()).longitude(info.getLongitude()).account(account).build()).getId();
 	}
 	
-	
-	// 특정 게시글 상세보기 -> 로그인된 경우
-	public PostDto.Detail getPostById(Long post_id, Account account) {
-		Post post = postRepo.findById(post_id).orElseThrow(EntityNotFoundException::new);
-		int cntOfRecommend = post.getRecommend().size(); // 댓글 개수
-		int cntOfComment = post.getComment().size(); // 게시글 추천 개수
+	// 모든 게시글 가져오기 -> 로그인된 경우
+	public List<PostDto.Detail> getAllPost(Account account) {
+		List<Post> postList = postRepo.findAll();
+		List<PostDto.Detail> result = new ArrayList<>();
 		
-		Account post_account = post.getAccount();
-		boolean isAuthor = false;
-		
-		// 게시글 작성자인지 확인
-		if (account.getId() == post_account.getId()) {
-			isAuthor = true;
+		for (Post post : postList) {
+			int cntOfRecommend = post.getRecommend().size(); // 댓글 개수
+			int cntOfComment = post.getComment().size(); // 게시글 추천 개수
+			
+			Account post_account = post.getAccount();
+			boolean isAuthor = false;
+			
+			// 게시글 작성자인지 확인
+			if (account.getId() == post_account.getId()) {
+				isAuthor = true;
+			}
+			
+			boolean isRecommended = recommendPostRepo.existsByPostAndAccount(post, account); // 게시글 추천했는지 확인
+			String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+			
+			result.add(new PostDto.Detail(post_account.getNickname(), post_account.getImageUrl(), 
+					post.getContent(), post.getImageUrl(), post.getLatitude(), post.getLongitude(), 
+					createAt, isAuthor, isRecommended, cntOfRecommend, cntOfComment));
 		}
-		
-		boolean isRecommended = recommendPostRepo.existsByPostAndAccount(post, account); // 게시글 추천했는지 확인
-		String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
-		
-		PostDto.Detail result = new PostDto.Detail(post_account.getNickname(), post_account.getImageUrl(), 
-				post.getContent(), post.getImageUrl(), post.getLatitude(), post.getLongitude(), 
-				createAt, isAuthor, isRecommended, cntOfRecommend, cntOfComment);
 		
 		
 		return result;
