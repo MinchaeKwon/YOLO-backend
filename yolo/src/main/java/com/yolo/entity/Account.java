@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.yolo.dto.AccountUpdateDto;
 
 @Entity
-@Table(name="account", uniqueConstraints={@UniqueConstraint(columnNames={"email", "type"})})
+@Table(name="account", uniqueConstraints={@UniqueConstraint(columnNames={"socialId", "type"})})
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +29,7 @@ public class Account implements UserDetails {
 	private long id;
 	
 	// 소셜 로그인하고 받아오는 고유한 id
-	@Column(name="social_id", nullable=false)
+	@Column(name="socialId", nullable=false)
 	private String socialId;
 	
 	// 소셜 로그인 타입 - kakao, naver
