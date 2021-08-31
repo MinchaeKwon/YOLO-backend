@@ -1,5 +1,6 @@
 package com.yolo.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
@@ -22,6 +25,7 @@ import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
 import com.yolo.response.SuccessResponse;
 import com.yolo.service.PostService;
+import com.yolo.service.S3Uploader;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +35,27 @@ public class PostController {
 
 	@Autowired
 	PostService postService;
+	
+	private final S3Uploader s3Uploader;
+	
+	// S3 이미지 업로드 테스트
+	@PostMapping("/image")
+    public String upload(@RequestParam("image") MultipartFile multipartFile) throws IOException {
+        return s3Uploader.upload(multipartFile, "images");
+    }
+	
+	// S3 이미지 삭제 테스트
+	@DeleteMapping("/image")
+	public boolean delete(@RequestParam("path") String path) {
+		boolean result = false;
+		
+		try {
+			result = s3Uploader.delete(path);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 	// 게시글 작성하기
 	@PostMapping("/community")
