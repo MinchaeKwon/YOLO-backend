@@ -38,7 +38,7 @@ public class AccountController {
 	@Autowired
 	private JwtUserDetailsService userDetailService;
 
-	// 회원 가입
+	// 회원정보 저장 -> socialId, type, nickname
 	@PostMapping(value = "/signup")
 	public ResponseEntity<?> signup(@ModelAttribute AccountDto info) {
 		try {
@@ -58,13 +58,13 @@ public class AccountController {
 		final UserDetails userDetails;
 
 		try {
-			
 			System.out.println("type: " + request.getType());
 			userDetails = userDetailService.loadUserBySocialIdAndType(request.getSocialId(), request.getType());
 
 			token = jwtTokenUtil.generateToken(userDetails);
 			
 		} catch (SocialUserNotFoundException e) {
+			// 문자열로 보내지말고 int로 1234 이런식으로 보내기
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 회원정보가 없습니다.", "404"));
 		}
 		
@@ -92,7 +92,7 @@ public class AccountController {
 		AccountDto.Profile account;
 		
 		try {
-			account = userDetailService.loadUserById(accountId);	
+			account = userDetailService.loadUserById(accountId);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 회원정보가 없습니다.", "404"));
 		}
@@ -113,7 +113,7 @@ public class AccountController {
 		return ResponseEntity.ok().body(new Response("회원정보 수정 성공"));
 	}
 	
-	// 닉네임 중복 확인
+	// 닉네임 중복 확인 -> 사용 X
 	@GetMapping("/nickname/exist")
 	public ResponseEntity<?> isExistName(@RequestParam("nickname") String nickname){		
 		if(userDetailService.isExistNickname(nickname)) {

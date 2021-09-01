@@ -1,7 +1,5 @@
 package com.yolo.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +12,6 @@ public class AccountDto {
 	private String socialId;
 	private String type;
 	private String nickname;
-	private MultipartFile image;
 	
 	@Getter
 	@NoArgsConstructor

@@ -7,5 +7,6 @@ import com.yolo.entity.Image;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
-
+	// 이미지 삭제
+	int deleteByImageUrl(String imageUrl);
 }
