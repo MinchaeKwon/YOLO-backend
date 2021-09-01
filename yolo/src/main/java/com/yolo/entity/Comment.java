@@ -23,8 +23,8 @@ public class Comment {
 	@Column(name="content")
 	private String content;
 	
-	@Column(name="imageUrl")
-	private String imageUrl;
+	@OneToOne(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
+	private Image image;
 	
 	@Column(name="createAt")
 	@CreationTimestamp
@@ -43,9 +43,8 @@ public class Comment {
 	private Post post;
 	
 	@Builder
-	public Comment(String content, String imageUrl, Account account, Post post) {
+	public Comment(String content, Account account, Post post) {
 		this.content = content;
-		this.imageUrl = imageUrl;
 		this.account = account;
 		this.post = post;
 	}

@@ -24,9 +24,6 @@ public class Post {
 	@Column(name="content")
 	private String content;
 	
-	@Column(name="imageUrl")
-	private String imageUrl;
-	
 	@Column(name="latitude")
 	private double latitude;
 	
@@ -46,15 +43,17 @@ public class Post {
 	private Account account;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
-	private List<LikePost> recommend;
+	private List<Image> images;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
+	private List<Liked> recommend;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
 	private List<Comment> comment;
 	
 	@Builder
-	public Post(String content, String imageUrl, double latitude, double longitude , Account account) {
+	public Post(String content, double latitude, double longitude , Account account) {
 		this.content = content;
-		this.imageUrl = imageUrl;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.account = account;

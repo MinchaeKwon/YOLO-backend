@@ -39,11 +39,11 @@ public class Account implements UserDetails {
 	@Column(name="auth")
 	private String auth;
 	
-	@Column(name="nickname", unique=true, nullable=false)
+	@Column(name="nickname", nullable=false)
 	private String nickname;
 	
-	@Column(name="imageUrl")
-	private String imageUrl;
+	@OneToOne(cascade = CascadeType.ALL, mappedBy="account", orphanRemoval=true)
+	private Image image;
 	
 	@Column(name="createAt")
 	@CreationTimestamp
@@ -54,17 +54,15 @@ public class Account implements UserDetails {
 	private LocalDateTime updateAt;
 	
 	@Builder
-	public Account(String socialId, String type, String auth, String nickname, String imageUrl) {
+	public Account(String socialId, String type, String auth, String nickname) {
 		this.socialId = socialId;
 		this.type = type;
 		this.auth = auth;
 		this.nickname = nickname;
-		this.imageUrl = imageUrl;
 	}
 	
 	public void update(AccountUpdateDto infoDto) {
 		this.nickname = infoDto.getNickname();
-		this.imageUrl = infoDto.getImageUrl();
 	}
 
 	@Override
