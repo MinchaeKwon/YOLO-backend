@@ -1,5 +1,7 @@
 package com.yolo.security;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,14 +12,25 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yolo.dto.AccountDto;
 import com.yolo.dto.AccountUpdateDto;
 import com.yolo.entity.Account;
+import com.yolo.entity.Image;
 import com.yolo.repository.AccountRepository;
+import com.yolo.repository.ImageRepository;
 import com.yolo.response.SocialUserNotFoundException;
+import com.yolo.service.S3Service;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	private AccountRepository accountRepository;
+	
+	@Autowired
+	private ImageRepository imageRepo;
+	
+	private final S3Service s3Service;
 
 	// 시큐리티에서 지정한 서비스이기 때문에 이 메소드를 필수로 구현
 	public UserDetails loadUserByUsername(String socialId) throws UsernameNotFoundException {
@@ -25,17 +38,27 @@ public class JwtUserDetailsService implements UserDetailsService {
 	}
 
 	// 소셜 로그인에 사용
-	public UserDetails loadUserBySocialIdAndType(String email, String type)
+	public UserDetails loadUserBySocialIdAndType(String socialId, String type)
 			throws UsernameNotFoundException, SocialUserNotFoundException {
-		return accountRepository.findBySocialIdAndType(email, type)
-				.orElseThrow(() -> new SocialUserNotFoundException((email)));
+		return accountRepository.findBySocialIdAndType(socialId, type)
+				.orElseThrow(() -> new SocialUserNotFoundException((socialId)));
 	}
 
 	// 회원정보 저장
 	@Transactional
-	public Long save(AccountDto infoDto) {
-		return accountRepository.save(Account.builder().socialId(infoDto.getSocialId()).type(infoDto.getType()).auth("ROLE_USER")
-				.nickname(infoDto.getNickname()).imageUrl(infoDto.getImageUrl()).build()).getId();
+	public Long save(AccountDto infoDto) throws IOException {
+		Account account = accountRepository.save(Account.builder().socialId(infoDto.getSocialId()).type(infoDto.getType()).auth("ROLE_USER")
+				.nickname(infoDto.getNickname()).build());
+		
+		if (infoDto.getImage() != null) {
+			// 이미지 파일 S3에 업로드 후 url을 테이블에 저장
+			System.out.println("들어온 이미지: " + infoDto.getImage().getOriginalFilename());
+			String imageUrl = s3Service.upload(infoDto.getImage(), "images");
+			
+			imageRepo.save(Image.builder().imageUrl(imageUrl).account(account).build());
+		}
+		
+		return account.getId();
 	}
 
 	// 닉네임 중복 확인
@@ -43,15 +66,52 @@ public class JwtUserDetailsService implements UserDetailsService {
 		return accountRepository.existsByNickname(nickname);
 	}
 	
-	// 특정 사용자의 id로 사용자 정보 가져오기
+	// 사용자의 id로 사용자 정보 가져오기
 	public AccountDto.Profile loadUserById(long id) throws UsernameNotFoundException {
 		Account account = accountRepository.findById(id).orElseThrow();
-		AccountDto.Profile result = new AccountDto.Profile(account.getSocialId(), account.getType(), account.getNickname(), account.getImageUrl());
+		
+		Image image = account.getImage();
+		String imageUrl = null;
+		
+		if (image != null) {
+			imageUrl = image.getImageUrl();
+		}
+		
+		AccountDto.Profile result = new AccountDto.Profile(account.getSocialId(), account.getType(), account.getNickname(), imageUrl);
+		
 		return result;
 	}
 
 	// 회원정보 수정
-	public Long updateAccount(AccountUpdateDto infoDto, Account account) throws UsernameNotFoundException, SocialUserNotFoundException {
+	@Transactional
+	public Long updateAccount(AccountUpdateDto infoDto, Account account) throws SocialUserNotFoundException, IOException {
+		if (infoDto.getImage() != null) {
+			// 기존에 S3에 올라간 사용자 이미지 삭제 후 다시 저장
+			// 수정할 이미지 파일 S3에 업로드 후에 사용자 이미지 url 수정
+			
+			Image image = account.getImage(); // 사용자의 기존 이미지
+			boolean result = false; // 이미지가 삭제되었는지 확인
+			
+			if (image != null) {
+				// 클라이언트로부터 받은 이미지 파일이 현재 사용자의 이미지와 같을 경우에는 수정 X
+				
+				
+				
+				try {
+					result = s3Service.delete(image.getImageUrl());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (result) {
+				String imageUrl = s3Service.upload(infoDto.getImage(), "images");
+				
+				image.updateImage(imageUrl);
+				imageRepo.save(image);	
+			}
+		}
+		
 		Account updateAccount = (Account) loadUserBySocialIdAndType(account.getSocialId(), account.getType());
 		
 		updateAccount.update(infoDto);

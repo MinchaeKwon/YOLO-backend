@@ -6,17 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.yolo.dto.AccountDto;
 import com.yolo.dto.AccountUpdateDto;
 import com.yolo.entity.Account;
+import com.yolo.entity.Image;
 import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
 import com.yolo.response.SocialUserNotFoundException;
@@ -37,9 +38,9 @@ public class AccountController {
 	@Autowired
 	private JwtUserDetailsService userDetailService;
 
-	// 회원 가입 -> form data로 받도록 수정
+	// 회원 가입
 	@PostMapping(value = "/signup")
-	public ResponseEntity<?> signup(@RequestBody AccountDto info, MultipartFile file) {
+	public ResponseEntity<?> signup(@ModelAttribute AccountDto info) {
 		try {
 			userDetailService.save(info);
 		} catch (Exception e) {
@@ -52,7 +53,7 @@ public class AccountController {
 
 	// 소셜 로그인
 	@PostMapping(value = "/login")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest request) throws Exception {
+	public ResponseEntity<?> createAuthenticationToken(@ModelAttribute JwtRequest request) throws Exception {
 		String token = "";
 		final UserDetails userDetails;
 
@@ -73,7 +74,15 @@ public class AccountController {
 	// 로그인한 사용자의 정보 가져오기
 	@GetMapping(value = "/account/profile")
 	public ResponseEntity<?> getMyAccount(@AuthenticationPrincipal Account account) {
-		AccountDto.Profile profile = new AccountDto.Profile(account.getSocialId(), account.getType(), account.getNickname(), account.getImageUrl());
+		Image image = account.getImage();
+		String imageUrl = null;
+		
+		if (image != null) {
+			imageUrl = image.getImageUrl();
+		}
+		
+		AccountDto.Profile profile = new AccountDto.Profile(account.getSocialId(), account.getType(), 
+				account.getNickname(), imageUrl);
 		return ResponseEntity.ok().body(new SuccessResponse<AccountDto.Profile>(profile));
 	}
 	
@@ -108,10 +117,10 @@ public class AccountController {
 	@GetMapping("/nickname/exist")
 	public ResponseEntity<?> isExistName(@RequestParam("nickname") String nickname){		
 		if(userDetailService.isExistNickname(nickname)) {
-			return ResponseEntity.ok().body(new Response("이미 존재하는 닉네임입니다"));
+			return ResponseEntity.ok().body(new Response("이미 존재하는 닉네임입니다."));
 		}
 		else {
-			return ResponseEntity.ok().body(new Response("사용 가능"));
+			return ResponseEntity.ok().body(new Response("사용 가능한 닉네임입니다."));
 		}
 	}
 	

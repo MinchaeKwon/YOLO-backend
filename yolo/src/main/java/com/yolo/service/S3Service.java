@@ -1,13 +1,12 @@
 package com.yolo.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -20,12 +19,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Service
 @RequiredArgsConstructor
-@Component
-public class S3Uploader {
+public class S3Service {
 
 	private final AmazonS3Client amazonS3Client;
 
