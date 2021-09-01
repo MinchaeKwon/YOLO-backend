@@ -5,11 +5,11 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="like_post", uniqueConstraints={@UniqueConstraint(columnNames={"post_id", "account_id"})})
+@Table(name="liked", uniqueConstraints={@UniqueConstraint(columnNames={"post_id", "account_id"})})
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LikePost {
+public class Liked {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(updatable = false)
@@ -24,7 +24,7 @@ public class LikePost {
 	private Account account;
 	
 	@Builder
-	public LikePost(Post post, Account account) {
+	public Liked(Post post, Account account) {
 		this.post = post;
 		this.account = account;
 	}

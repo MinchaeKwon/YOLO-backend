@@ -25,7 +25,7 @@ import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
 import com.yolo.response.SuccessResponse;
 import com.yolo.service.PostService;
-import com.yolo.service.S3Uploader;
+import com.yolo.service.S3Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +36,7 @@ public class PostController {
 	@Autowired
 	PostService postService;
 	
-	private final S3Uploader s3Uploader;
+	private final S3Service s3Uploader;
 	
 	// S3 이미지 업로드 테스트
 	@PostMapping("/image")

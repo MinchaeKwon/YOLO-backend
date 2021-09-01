@@ -12,11 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
+import com.yolo.entity.Image;
+import com.yolo.entity.Liked;
 import com.yolo.entity.Post;
-import com.yolo.entity.LikePost;
 import com.yolo.repository.CommentRepository;
+import com.yolo.repository.LikedRepository;
 import com.yolo.repository.PostRepository;
-import com.yolo.repository.LikePostRepository;
 
 @Service
 public class PostService {
@@ -24,7 +25,7 @@ public class PostService {
 	PostRepository postRepo;
 	
 	@Autowired
-	LikePostRepository likePostRepo;
+	LikedRepository likedRepo;
 	
 	@Autowired
 	CommentRepository commtRepo;
@@ -32,7 +33,9 @@ public class PostService {
 	// 게시글 작성하기
 	@Transactional
 	public Long savePost(PostDto info, Account account) {
-		return postRepo.save(Post.builder().content(info.getContent()).imageUrl(info.getImageUrl())
+		// 이미지 파일 리스트 Image 테이블에 저장해야함 -> S3에 업로드 후에 url을 테이블에 저장
+		
+		return postRepo.save(Post.builder().content(info.getContent())
 				.latitude(info.getLatitude()).longitude(info.getLongitude()).account(account).build()).getId();
 	}
 	
@@ -53,11 +56,19 @@ public class PostService {
 				isAuthor = true;
 			}
 			
-			boolean isLiked = likePostRepo.existsByPostAndAccount(post, account); // 게시글 추천했는지 확인
+			boolean isLiked = likedRepo.existsByPostAndAccount(post, account); // 게시글 추천했는지 확인
 			String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 			
-			result.add(new PostDto.Detail(post_account.getNickname(), post_account.getImageUrl(), 
-					post.getContent(), post.getImageUrl(), post.getLatitude(), post.getLongitude(), 
+			// 사용자와 게시글 이미지 가져와야함
+			String accountImage = post.getAccount().getImage().getImageUrl();
+			List<String> postImageList = new ArrayList<>();
+			
+			for (Image image : post.getImages()) {
+				postImageList.add(image.getImageUrl());
+			}
+			
+			result.add(new PostDto.Detail(post_account.getNickname(), accountImage, 
+					post.getContent(), postImageList, post.getLatitude(), post.getLongitude(), 
 					createAt, isAuthor, isLiked, cntOfRecommend, cntOfComment));
 		}
 		
@@ -77,14 +88,14 @@ public class PostService {
 	public boolean addLike(Long post_id, Account account) {
 		Post post = postRepo.findById(post_id).orElseThrow(EntityNotFoundException::new);
 
-		boolean isExist = likePostRepo.existsByPostAndAccount(post, account);
+		boolean isExist = likedRepo.existsByPostAndAccount(post, account);
 
 		if (isExist) {
 			return false;
 		}
 
-		LikePost like = LikePost.builder().post(post).account(account).build();
-		likePostRepo.save(like);
+		Liked like = Liked.builder().post(post).account(account).build();
+		likedRepo.save(like);
 
 		return true;
 	}
@@ -94,7 +105,7 @@ public class PostService {
 	public boolean deleteLike(Long post_id, Account account) {
 		Post post = postRepo.findById(post_id).orElseThrow(EntityNotFoundException::new);
 
-		int delete = likePostRepo.deleteByPostAndAccount(post, account);
+		int delete = likedRepo.deleteByPostAndAccount(post, account);
 
 		if (delete == 1) {
 			return true;

@@ -1,5 +1,7 @@
 package com.yolo.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostDto {
 	private String content;
-	private String imageUrl;
 	private double latitude;
 	private double longitude;
 	
@@ -21,7 +22,7 @@ public class PostDto {
 		private String nickname;
 		private String authorImage;
 		private String content;
-		private String imageUrl;
+		private List<String> imageUrl;
 		private double latitude;
 		private double longitude;
 		private String createAt;
