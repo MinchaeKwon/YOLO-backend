@@ -9,9 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yolo.dto.CommentDto;
@@ -30,9 +30,9 @@ public class CommentController {
 	@Autowired
 	CommentService commtService;
 
-	// 게시글 작성하기
+	// 댓글 작성하기
 	@PostMapping("/community/{postId}/comment")
-	public ResponseEntity<?> createRecipePost(@PathVariable("postId") Long postId, @RequestBody CommentDto info, @AuthenticationPrincipal Account account) {
+	public ResponseEntity<?> createRecipePost(@PathVariable("postId") Long postId, @ModelAttribute CommentDto info, @AuthenticationPrincipal Account account) {
 		Long commentId;
 
 		try {
@@ -45,7 +45,7 @@ public class CommentController {
 		return ResponseEntity.ok().body(new SuccessResponse<Long>(commentId));
 	}
 
-	// 특정 게시글 삭제하기
+	// 특정 댓글 삭제하기
 	@DeleteMapping("/community/comment/{commentId}")
 	public ResponseEntity<?> deleteRecipePost(@PathVariable("commentId") Long id) {
 		try {
@@ -61,7 +61,7 @@ public class CommentController {
 		return ResponseEntity.ok().body(new Response("댓글 삭제 성공"));
 	}
 
-	// 모든 게시글 가져오기
+	// 특정 게시글의 모든 댓글 가져오기
 	@GetMapping("/community/{postId}/comment")
 	public ResponseEntity<?> getAllPost(@PathVariable("postId") Long postId, @AuthenticationPrincipal Account account) {
 		List<CommentDto.Detail> commentList;

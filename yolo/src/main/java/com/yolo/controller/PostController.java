@@ -1,6 +1,5 @@
 package com.yolo.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -12,12 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
@@ -25,7 +22,6 @@ import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
 import com.yolo.response.SuccessResponse;
 import com.yolo.service.PostService;
-import com.yolo.service.S3Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,30 +32,9 @@ public class PostController {
 	@Autowired
 	PostService postService;
 	
-	private final S3Service s3Uploader;
-	
-	// S3 이미지 업로드 테스트
-	@PostMapping("/image")
-    public String upload(@RequestParam("image") MultipartFile multipartFile) throws IOException {
-        return s3Uploader.upload(multipartFile, "images");
-    }
-	
-	// S3 이미지 삭제 테스트
-	@DeleteMapping("/image")
-	public boolean delete(@RequestParam("path") String path) {
-		boolean result = false;
-		
-		try {
-			result = s3Uploader.delete(path);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	
 	// 게시글 작성하기
 	@PostMapping("/community")
-	public ResponseEntity<?> createRecipePost(@RequestBody PostDto info, @AuthenticationPrincipal Account account) {
+	public ResponseEntity<?> createRecipePost(@ModelAttribute PostDto info, @AuthenticationPrincipal Account account) {
 		Long postId;
 
 		try {
@@ -85,7 +60,7 @@ public class PostController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("게시글 삭제 실패", "500"));
 		}
 		
-		return ResponseEntity.ok().body(new Response("레시피 삭제 성공"));
+		return ResponseEntity.ok().body(new Response("게시글 삭제 성공"));
 	}
 	
 	// 모든 게시글 가져오기

@@ -1,5 +1,6 @@
 package com.yolo.service;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yolo.dto.CommentDto;
 import com.yolo.entity.Account;
 import com.yolo.entity.Comment;
+import com.yolo.entity.Image;
 import com.yolo.entity.Post;
 import com.yolo.repository.CommentRepository;
+import com.yolo.repository.ImageRepository;
 import com.yolo.repository.PostRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class CommentService {
 
 	@Autowired
@@ -24,14 +30,28 @@ public class CommentService {
 	@Autowired
 	private PostRepository postRepo;
 	
+	@Autowired
+	ImageRepository imageRepo;
+	
+	private final S3Service s3Service;
+	
 	// 댓글 작성
 	@Transactional
-	public Long save(Long postId, CommentDto dto, Account account) {
+	public Long save(Long postId, CommentDto dto, Account account) throws IOException {
 		Post post = postRepo.findById(postId).get();
 		
-		// 이미지 S3에 업로드 후 image 테이블에 url 저장해야함
+		Comment comment = commtRepo.save(Comment.builder().content(dto.getContent()).account(account).post(post).build());
 		
-		return commtRepo.save(Comment.builder().content(dto.getContent()).account(account).post(post).build()).getId();
+		// 이미지 S3에 업로드 후 image 테이블에 url 저장
+		// 이미지 파일이 있을 경우에만 업로드
+		if (dto.getImage() != null) {
+			System.out.println("댓글 들어온 이미지: " + dto.getImage().getOriginalFilename());
+			
+			String imageUrl = s3Service.upload(dto.getImage(), "images");
+			imageRepo.save(Image.builder().imageUrl(imageUrl).comment(comment).build());
+		}
+		
+		return comment.getId();
 	}
 	
 	// 댓글 삭제

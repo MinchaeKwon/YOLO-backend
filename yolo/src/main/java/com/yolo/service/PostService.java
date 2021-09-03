@@ -1,5 +1,6 @@
 package com.yolo.service;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
@@ -16,10 +18,14 @@ import com.yolo.entity.Image;
 import com.yolo.entity.Liked;
 import com.yolo.entity.Post;
 import com.yolo.repository.CommentRepository;
+import com.yolo.repository.ImageRepository;
 import com.yolo.repository.LikedRepository;
 import com.yolo.repository.PostRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class PostService {
 	@Autowired
 	PostRepository postRepo;
@@ -30,13 +36,30 @@ public class PostService {
 	@Autowired
 	CommentRepository commtRepo;
 	
+	@Autowired
+	ImageRepository imageRepo;
+	
+	private final S3Service s3Service;
+	
 	// 게시글 작성하기
 	@Transactional
-	public Long savePost(PostDto info, Account account) {
-		// 이미지 파일 리스트 Image 테이블에 저장해야함 -> S3에 업로드 후에 url을 테이블에 저장
+	public Long savePost(PostDto info, Account account) throws IOException {
+		Post post = postRepo.save(Post.builder().content(info.getContent())
+				.latitude(info.getLatitude()).longitude(info.getLongitude()).account(account).build());
 		
-		return postRepo.save(Post.builder().content(info.getContent())
-				.latitude(info.getLatitude()).longitude(info.getLongitude()).account(account).build()).getId();
+		
+		// 이미지 S3에 업로드 후 image 테이블에 url 저장
+		// 이미지 파일이 있을 경우에만 업로드
+		if (info.getImages() != null) {
+			for (MultipartFile image : info.getImages()) {
+				System.out.println("게시글 들어온 이미지: " + image.getOriginalFilename());
+				
+				String imageUrl = s3Service.upload(image, "images");
+				imageRepo.save(Image.builder().imageUrl(imageUrl).post(post).build());
+			}
+		}
+		
+		return post.getId();
 	}
 	
 	// 모든 게시글 가져오기 -> 로그인된 경우
@@ -56,7 +79,7 @@ public class PostService {
 				isAuthor = true;
 			}
 			
-			boolean isLiked = likedRepo.existsByPostAndAccount(post, account); // 게시글 추천했는지 확인
+			boolean isLiked = likedRepo.existsByPostAndAccount(post, account); // 게시글 좋아요 했는지 확인
 			String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 			
 			// 사용자와 게시글 이미지 가져와야함
@@ -72,10 +95,8 @@ public class PostService {
 					createAt, isAuthor, isLiked, cntOfRecommend, cntOfComment));
 		}
 		
-		
 		return result;
 	}
-	
 	
 	// 특정 게시글 삭제하기
 	@Transactional

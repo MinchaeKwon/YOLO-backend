@@ -2,6 +2,8 @@ package com.yolo.dto;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +16,7 @@ public class PostDto {
 	private String content;
 	private double latitude;
 	private double longitude;
+	private List<MultipartFile> images;
 	
 	@Getter @Setter
 	@NoArgsConstructor
