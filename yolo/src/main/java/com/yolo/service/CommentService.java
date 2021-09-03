@@ -1,5 +1,9 @@
 package com.yolo.service;
 
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +41,25 @@ public class CommentService {
 	}
 	
 	// 특정 게시글의 모든 댓글 가져오기
-	
+	public List<CommentDto.Detail> getAllComment(Long postId, Account account) {
+		List<Comment> commentList = commtRepo.findByPostId(postId);
+		List<CommentDto.Detail> result = new ArrayList<>();
+		
+		for (Comment c : commentList) {
+			Account commtAccount = c.getAccount();
+			
+			boolean isAuthor = false;
+			if (account.getId() == commtAccount.getId()) {
+				isAuthor = true;
+			}
+			
+			String createAt = c.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+			
+			result.add(new CommentDto.Detail(c.getContent(), c.getImage().getImageUrl(), 
+					commtAccount.getImage().getImageUrl(), commtAccount.getNickname(), createAt, isAuthor));
+		}
+		
+		return result;
+	}
 	
 }
