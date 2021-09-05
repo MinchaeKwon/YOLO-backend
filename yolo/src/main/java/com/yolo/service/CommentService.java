@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,8 +58,13 @@ public class CommentService {
 	
 	// 댓글 삭제
 	@Transactional
-	public void delete(Long commentId) {
+	public boolean delete(Long commentId) {
+		Comment comment = commtRepo.findById(commentId).orElseThrow(EntityNotFoundException::new);
+		Image commtImage = comment.getImage();
+		
 		commtRepo.deleteById(commentId);
+		
+		return s3Service.delete(commtImage.getImageUrl());
 	}
 	
 	// 특정 게시글의 모든 댓글 가져오기

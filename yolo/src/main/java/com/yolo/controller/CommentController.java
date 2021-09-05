@@ -48,8 +48,10 @@ public class CommentController {
 	// 특정 댓글 삭제하기
 	@DeleteMapping("/community/comment/{commentId}")
 	public ResponseEntity<?> deleteRecipePost(@PathVariable("commentId") Long id) {
+		boolean result;
+		
 		try {
-			commtService.delete(id);
+			result = commtService.delete(id);
 		} catch (EmptyResultDataAccessException e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 댓글 정보가 없습니다.", "404"));
@@ -58,7 +60,11 @@ public class CommentController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 삭제 실패", "500"));
 		}
 
-		return ResponseEntity.ok().body(new Response("댓글 삭제 성공"));
+		if (result) {
+			return ResponseEntity.ok().body(new Response("댓글 삭제 성공"));	
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 삭제 실패", "500"));
+		}
 	}
 
 	// 특정 게시글의 모든 댓글 가져오기

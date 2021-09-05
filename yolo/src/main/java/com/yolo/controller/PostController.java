@@ -5,7 +5,6 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -50,9 +49,11 @@ public class PostController {
 	// 특정 게시글 삭제하기
 	@DeleteMapping("/community/{id}")
 	public ResponseEntity<?> deleteRecipePost(@PathVariable("id") Long id) {
+		boolean result;
+		
 		try {
-			postService.deletePost(id);
-		} catch (EmptyResultDataAccessException e) {
+			result = postService.deletePost(id);
+		} catch (EntityNotFoundException e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 게시글 정보가 없습니다.", "404"));
 		} catch (Exception e) {
@@ -60,7 +61,11 @@ public class PostController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("게시글 삭제 실패", "500"));
 		}
 		
-		return ResponseEntity.ok().body(new Response("게시글 삭제 성공"));
+		if (result) {
+			return ResponseEntity.ok().body(new Response("게시글 삭제 성공"));
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("게시글 삭제 실패", "500"));
+		}
 	}
 	
 	// 모든 게시글 가져오기

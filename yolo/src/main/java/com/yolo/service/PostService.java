@@ -104,8 +104,19 @@ public class PostService {
 	
 	// 특정 게시글 삭제하기
 	@Transactional
-	public void deletePost(Long post_id) {
+	public boolean deletePost(Long post_id) {
+		Post post = postRepo.findById(post_id).orElseThrow(EntityNotFoundException::new);
+		List<Image> postImage = post.getImages();
+		
 		postRepo.deleteById(post_id);
+		
+		// S3에 업로드된 사진도 삭제
+		boolean result = false;
+		for (Image image : postImage) {
+			result = s3Service.delete(image.getImageUrl());
+		}
+		
+		return result;
 	}
 	
 	// 게시글 좋아요
