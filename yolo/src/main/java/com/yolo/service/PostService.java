@@ -85,7 +85,7 @@ public class PostService {
 			String accountImageUrl = null;
 			
 			if (accountImage != null) {
-				accountImage.getImageUrl();
+				accountImageUrl = accountImage.getImageUrl();
 			}
 			
 			List<String> postImage = new ArrayList<>();

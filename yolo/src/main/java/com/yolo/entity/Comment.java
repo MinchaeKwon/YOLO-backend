@@ -23,7 +23,7 @@ public class Comment {
 	@Column(name="content")
 	private String content;
 	
-	@OneToOne(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
+	@OneToOne(cascade = CascadeType.ALL, mappedBy="comment", orphanRemoval=true)
 	private Image image;
 	
 	@Column(name="createAt")

@@ -86,7 +86,7 @@ public class CommentService {
 			String accountImageUrl = null;
 			
 			if (accountImage != null) {
-				accountImage.getImageUrl();
+				accountImageUrl = accountImage.getImageUrl();
 			}
 			
 			result.add(new CommentDto.Detail(c.getId(), commtAccount.getNickname(), accountImageUrl, 
