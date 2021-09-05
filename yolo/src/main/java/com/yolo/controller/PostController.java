@@ -101,7 +101,7 @@ public class PostController {
 			return ResponseEntity.ok().body(new Response("게시글 좋아요 성공"));			
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("이미 좋아요한 레시피입니다.", "400"));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("이미 좋아요한 게시글입니다.", "400"));
 	}
 
 	// 게시글 좋아요 취소
@@ -123,7 +123,7 @@ public class PostController {
 			return ResponseEntity.ok().body(new Response("게시글 좋아요 취소 성공"));			
 		}
 
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("게시글 좋아요 취소 실패", "500"));
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("좋아요 하지 않은 게시글입니다.", "400"));
 	}
 	
 }

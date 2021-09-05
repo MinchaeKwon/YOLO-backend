@@ -22,6 +22,7 @@ public class PostDto {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Detail {
+		private Long postId;
 		private String nickname;
 		private String authorImage;
 		private String content;

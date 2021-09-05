@@ -47,7 +47,6 @@ public class PostService {
 		Post post = postRepo.save(Post.builder().content(info.getContent())
 				.latitude(info.getLatitude()).longitude(info.getLongitude()).account(account).build());
 		
-		
 		// 이미지 S3에 업로드 후 image 테이블에 url 저장
 		// 이미지 파일이 있을 경우에만 업로드
 		if (info.getImages() != null) {
@@ -55,7 +54,7 @@ public class PostService {
 				System.out.println("게시글 들어온 이미지: " + image.getOriginalFilename());
 				
 				String imageUrl = s3Service.upload(image, "images");
-				imageRepo.save(Image.builder().imageUrl(imageUrl).post(post).build());
+				imageRepo.save(Image.builder().imageUrl(imageUrl).post(post).build()).getId();
 			}
 		}
 		
@@ -82,16 +81,21 @@ public class PostService {
 			boolean isLiked = likedRepo.existsByPostAndAccount(post, account); // 게시글 좋아요 했는지 확인
 			String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 			
-			// 사용자와 게시글 이미지 가져와야함
-			String accountImage = post.getAccount().getImage().getImageUrl();
-			List<String> postImageList = new ArrayList<>();
+			Image accountImage = post_account.getImage();
+			String accountImageUrl = null;
 			
-			for (Image image : post.getImages()) {
-				postImageList.add(image.getImageUrl());
+			if (accountImage != null) {
+				accountImage.getImageUrl();
 			}
 			
-			result.add(new PostDto.Detail(post_account.getNickname(), accountImage, 
-					post.getContent(), postImageList, post.getLatitude(), post.getLongitude(), 
+			List<String> postImage = new ArrayList<>();
+			
+			for (Image image : post.getImages()) {
+				postImage.add(image.getImageUrl());
+			}
+			
+			result.add(new PostDto.Detail(post.getId(), post_account.getNickname(), accountImageUrl, 
+					post.getContent(), postImage, post.getLatitude(), post.getLongitude(), 
 					createAt, isAuthor, isLiked, cntOfRecommend, cntOfComment));
 		}
 		
