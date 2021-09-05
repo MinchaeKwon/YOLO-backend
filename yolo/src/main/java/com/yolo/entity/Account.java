@@ -24,7 +24,7 @@ import com.yolo.dto.AccountUpdateDto;
 @AllArgsConstructor
 public class Account implements UserDetails {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false)
 	private long id;
 	

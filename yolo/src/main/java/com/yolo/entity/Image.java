@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Image {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false)
 	private long id;
 	
