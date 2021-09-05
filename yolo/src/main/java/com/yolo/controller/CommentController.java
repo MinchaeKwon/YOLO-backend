@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +32,7 @@ public class CommentController {
 	CommentService commtService;
 
 	// 댓글 작성하기
-	@PostMapping("/community/{postId}/comment")
+	@PostMapping(value = "/community/{postId}/comment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> createRecipePost(@PathVariable("postId") Long postId, @ModelAttribute CommentDto info, @AuthenticationPrincipal Account account) {
 		Long commentId;
 

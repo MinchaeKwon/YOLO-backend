@@ -2,6 +2,7 @@ package com.yolo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yolo.dto.AccountDto;
@@ -39,7 +41,7 @@ public class AccountController {
 	private JwtUserDetailsService userDetailService;
 
 	// 회원정보 저장 -> socialId, type, nickname
-	@PostMapping(value = "/signup")
+	@PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> signup(@ModelAttribute AccountDto info) {
 		try {
 			userDetailService.save(info);
@@ -52,7 +54,7 @@ public class AccountController {
 	}
 
 	// 소셜 로그인
-	@PostMapping(value = "/login")
+	@PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> createAuthenticationToken(@ModelAttribute JwtRequest request) throws Exception {
 		String token = "";
 		final UserDetails userDetails;
@@ -72,7 +74,7 @@ public class AccountController {
 	}
 
 	// 로그인한 사용자의 정보 가져오기
-	@GetMapping(value = "/account/profile")
+	@GetMapping("/account/profile")
 	public ResponseEntity<?> getMyAccount(@AuthenticationPrincipal Account account) {
 		Image image = account.getImage();
 		String imageUrl = null;
@@ -87,7 +89,7 @@ public class AccountController {
 	}
 
 	// 사용자 id로 정보 가져오기
-	@GetMapping(value = "/account/{id}")
+	@GetMapping("/account/{id}")
 	public ResponseEntity<?> getMyAccountById(@PathVariable("id") Long accountId) {
 		AccountDto.Profile account;
 
@@ -101,7 +103,7 @@ public class AccountController {
 	}
 
 	// 회원정보 수정
-	@PutMapping("account/profile")
+	@PutMapping(value = "account/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> updateAccount(@ModelAttribute AccountUpdateDto infoDto, @AuthenticationPrincipal Account account) {
 		try {
 			userDetailService.updateAccount(infoDto, account);
