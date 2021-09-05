@@ -17,6 +17,7 @@ public class AccountDto {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Profile {
+		private Long accountId;
 		private String socialId;
 		private String type;
 		private String nickname;

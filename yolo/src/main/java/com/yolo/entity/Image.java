@@ -31,20 +31,10 @@ public class Image {
 	private Comment comment;
 	
 	@Builder
-	public Image(String imageUrl, Account account) {
+	public Image(String imageUrl, Account account, Post post, Comment comment) {
 		this.imageUrl = imageUrl;
 		this.account = account;
-	}
-	
-	@Builder
-	public Image(String imageUrl, Post post) {
-		this.imageUrl = imageUrl;
 		this.post = post;
-	}
-	
-	@Builder
-	public Image(String imageUrl, Comment comment) {
-		this.imageUrl = imageUrl;
 		this.comment = comment;
 	}
 	

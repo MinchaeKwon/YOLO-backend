@@ -69,7 +69,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 			imageUrl = image.getImageUrl();
 		}
 		
-		AccountDto.Profile result = new AccountDto.Profile(account.getSocialId(), account.getType(), account.getNickname(), imageUrl);
+		AccountDto.Profile result = new AccountDto.Profile(account.getId(), account.getSocialId(), 
+				account.getType(), account.getNickname(), imageUrl);
 		
 		return result;
 	}
@@ -86,17 +87,34 @@ public class JwtUserDetailsService implements UserDetailsService {
 			
 			// 사용자 이미지가 null이 아닐 경우 기존 이미지 삭제하고 수정
 			if (image != null) {
-				boolean result = s3Service.delete(image.getImageUrl());
+				System.out.println("사용자 프로필 사진 존재");
 				
-				// 이미지가 제대로 삭제되었을 경우
-				if (result) {
-					String imageUrl = s3Service.upload(infoDto.getImage(), "images");
-					
-					image.updateImage(imageUrl);
-					imageRepo.save(image);	
+				// DB에서 먼저 삭제
+				int delete = imageRepo.deleteByImageUrl(image.getImageUrl());
+				
+				boolean isDeleted = false;
+				
+				if (delete > 0) {
+					isDeleted = true;
 				}
+				
+				// DB에서 제대로 삭제되었으면 S3에서도 삭제
+				if (isDeleted) {
+					boolean result = s3Service.delete(image.getImageUrl());
+					
+					// 이미지가 제대로 삭제되었을 경우
+					if (result) {
+						String imageUrl = s3Service.upload(infoDto.getImage(), "images");
+						
+						image.updateImage(imageUrl);
+						imageRepo.save(image);	
+					}	
+				}
+				
 			} 
 			else {
+				System.out.println("사용자 프로필 사진 없음");
+				
 				// 사용자 이미지가 null인 경우 새롭게 삽입
 				// 이미지 파일 S3에 업로드 후 url을 테이블에 저장
 				System.out.println("들어온 이미지: " + infoDto.getImage().getOriginalFilename());
@@ -114,22 +132,24 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	// 회원정보에서 이미지만 삭제
 	@Transactional
-	public boolean deleteImage(String imageUrl) {
-		// S3에 업로드된 이미지도 함께 삭제
-		boolean result = s3Service.delete(imageUrl);
-		
-		int delete = 0;
-		
-		// S3에 있는 이미지가 삭제되었을 경우에만 DB에서도 삭제
-		if (result) {
-			delete = imageRepo.deleteByImageUrl(imageUrl);
-		}
+	public boolean deleteImage(String imageUrl) {	
+		// DB에서 먼저 삭제
+		int delete = imageRepo.deleteByImageUrl(imageUrl);
+		boolean isDeleted = false;
 		
 		if (delete > 0) {
-			return true;
-		} else {
-			return false;
+			isDeleted = true;
 		}
+		
+		boolean result = false;
+		
+		// DB에서 제대로 삭제되었으면 S3에서도 삭제
+		if (isDeleted) {
+			result = s3Service.delete(imageUrl);
+		}
+		
+		return result;
+		
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.yolo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -82,7 +81,7 @@ public class AccountController {
 			imageUrl = image.getImageUrl();
 		}
 
-		AccountDto.Profile profile = new AccountDto.Profile(account.getSocialId(), account.getType(),
+		AccountDto.Profile profile = new AccountDto.Profile(account.getId(), account.getSocialId(), account.getType(),
 				account.getNickname(), imageUrl);
 		return ResponseEntity.ok().body(new SuccessResponse<AccountDto.Profile>(profile));
 	}
@@ -119,9 +118,6 @@ public class AccountController {
 
 		try {
 			result = userDetailService.deleteImage(imageUrl);
-		} catch (EmptyResultDataAccessException e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 이미지가 없습니다.", "404"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));
