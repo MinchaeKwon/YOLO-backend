@@ -11,18 +11,19 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
-	String content;
-	MultipartFile image;
+	private String content;
+	private MultipartFile image;
 	
 	@Getter @Setter
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class Detail {
-		String content;
-		String imageUrl;
-		String nickname;
-		String authorImage;
-		String createAt;
-		boolean isAuthor;
+		private Long commentId;
+		private String nickname;
+		private String authorImage;
+		private String content;
+		private String imageUrl;
+		private String createAt;
+		private boolean isAuthor;
 	}
 }

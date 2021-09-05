@@ -75,8 +75,22 @@ public class CommentService {
 			
 			String createAt = c.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 			
-			result.add(new CommentDto.Detail(c.getContent(), c.getImage().getImageUrl(), 
-					commtAccount.getImage().getImageUrl(), commtAccount.getNickname(), createAt, isAuthor));
+			Image commentImage = c.getImage();
+			String commentImageUrl = null;
+			
+			if (commentImage != null) {
+				commentImageUrl = commentImage.getImageUrl();
+			}
+			
+			Image accountImage = commtAccount.getImage();
+			String accountImageUrl = null;
+			
+			if (accountImage != null) {
+				accountImage.getImageUrl();
+			}
+			
+			result.add(new CommentDto.Detail(c.getId(), commtAccount.getNickname(), accountImageUrl, 
+					c.getContent(), commentImageUrl, createAt, isAuthor));
 		}
 		
 		return result;
