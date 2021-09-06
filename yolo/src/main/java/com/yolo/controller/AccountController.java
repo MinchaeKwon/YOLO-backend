@@ -2,7 +2,6 @@ package com.yolo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yolo.dto.AccountDto;
@@ -41,7 +39,7 @@ public class AccountController {
 	private JwtUserDetailsService userDetailService;
 
 	// 회원정보 저장 -> socialId, type, nickname
-	@PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(value = "/signup")
 	public ResponseEntity<?> signup(@ModelAttribute AccountDto info) {
 		try {
 			userDetailService.save(info);
@@ -54,7 +52,7 @@ public class AccountController {
 	}
 
 	// 소셜 로그인
-	@PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(value = "/login")
 	public ResponseEntity<?> createAuthenticationToken(@ModelAttribute JwtRequest request) throws Exception {
 		String token = "";
 		final UserDetails userDetails;
@@ -103,7 +101,7 @@ public class AccountController {
 	}
 
 	// 회원정보 수정
-	@PutMapping(value = "account/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PutMapping(value = "account/profile")
 	public ResponseEntity<?> updateAccount(@ModelAttribute AccountUpdateDto infoDto, @AuthenticationPrincipal Account account) {
 		try {
 			userDetailService.updateAccount(infoDto, account);
