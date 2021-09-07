@@ -113,11 +113,11 @@ public class AccountController {
 	}
 
 	@DeleteMapping("account/profile/image")
-	public ResponseEntity<?> deleteRecipePost(@RequestParam String imageUrl) {
+	public ResponseEntity<?> deleteRecipePost(@AuthenticationPrincipal Account account) {
 		boolean result;
 
 		try {
-			result = userDetailService.deleteImage(imageUrl);
+			result = userDetailService.deleteImage(account);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));

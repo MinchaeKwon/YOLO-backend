@@ -89,27 +89,16 @@ public class JwtUserDetailsService implements UserDetailsService {
 			if (image != null) {
 				System.out.println("사용자 프로필 사진 존재");
 				
-				// DB에서 먼저 삭제
-				int delete = imageRepo.deleteByImageUrl(image.getImageUrl());
+				// S3에 업로드된 이미지 먼저 삭제
+				boolean result = s3Service.delete(image.getImageUrl());
 				
-				boolean isDeleted = false;
-				
-				if (delete > 0) {
-					isDeleted = true;
-				}
-				
-				// DB에서 제대로 삭제되었으면 S3에서도 삭제
-				if (isDeleted) {
-					boolean result = s3Service.delete(image.getImageUrl());
+				// 이미지가 제대로 삭제되었을 경우
+				if (result) {
+					String imageUrl = s3Service.upload(infoDto.getImage(), "images");
 					
-					// 이미지가 제대로 삭제되었을 경우
-					if (result) {
-						String imageUrl = s3Service.upload(infoDto.getImage(), "images");
-						
-						image.updateImage(imageUrl);
-						imageRepo.save(image);	
-					}	
-				}
+					image.updateImage(imageUrl);
+					imageRepo.save(image);	
+				}	
 				
 			} 
 			else {
@@ -132,23 +121,29 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	// 회원정보에서 이미지만 삭제
 	@Transactional
-	public boolean deleteImage(String imageUrl) {	
-		// DB에서 먼저 삭제
-		int delete = imageRepo.deleteByImageUrl(imageUrl);
-		boolean isDeleted = false;
+	public boolean deleteImage(Account account) {	
+		Image image = account.getImage();
+		System.out.println("삭제할 이미지 url: " + image.getImageUrl() + ", id: " + image.getId());
 		
-		if (delete > 0) {
-			isDeleted = true;
-		}
+//		imageRepo.deleteByAccount(account);
 		
-		boolean result = false;
+		imageRepo.deleteById(image.getId());
+//		account.getImage().setImageUrl(null);
+//		System.out.println("delete?? " + account.getImage().getImageUrl());
 		
-		// DB에서 제대로 삭제되었으면 S3에서도 삭제
-		if (isDeleted) {
-			result = s3Service.delete(imageUrl);
-		}
+//		accountRepository.save(account);
+//		boolean result = s3Service.delete(image.getImageUrl());
 		
-		return result;
+//		int delete = imageRepo.deleteByImageUrl(image.getImageUrl());
+//		
+//		boolean result = false;
+//		if (delete > 0) {
+//			System.out.println("제대로 삭제됐나");
+//			result = s3Service.delete(image.getImageUrl());
+//		}
+		
+//		return result;
+		return true;
 		
 	}
 
