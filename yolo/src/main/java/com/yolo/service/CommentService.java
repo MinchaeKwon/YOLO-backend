@@ -64,7 +64,13 @@ public class CommentService {
 		
 		commtRepo.deleteById(commentId);
 		
-		return s3Service.delete(commtImage.getImageUrl());
+		boolean result = true;
+		
+		if (commtImage != null) {
+			result = s3Service.delete(commtImage.getImageUrl());
+		}
+		
+		return result;
 	}
 	
 	// 특정 게시글의 모든 댓글 가져오기

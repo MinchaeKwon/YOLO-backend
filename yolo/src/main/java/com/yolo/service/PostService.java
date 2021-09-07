@@ -113,7 +113,7 @@ public class PostService {
 		postRepo.deleteById(post_id);
 		
 		// S3에 업로드된 사진도 삭제
-		boolean result = false;
+		boolean result = true;
 		
 		if (postImage.size() != 0) {
 			for (Image image : postImage) {
