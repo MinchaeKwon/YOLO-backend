@@ -112,8 +112,13 @@ public class PostService {
 		
 		// S3에 업로드된 사진도 삭제
 		boolean result = false;
-		for (Image image : postImage) {
-			result = s3Service.delete(image.getImageUrl());
+		
+		if (postImage.size() != 0) {
+			for (Image image : postImage) {
+				result = s3Service.delete(image.getImageUrl());
+			}	
+		} else {
+			result = true;
 		}
 		
 		return result;
