@@ -119,12 +119,10 @@ public class PostService {
 			for (Image image : postImage) {
 				result = s3Service.delete(image.getImageUrl());
 			}
-			
-			for (Comment c : comments) {
-				result = s3Service.delete(c.getImage().getImageUrl());
-			}
-		} else {
-			result = true;
+		}
+		
+		for (Comment c : comments) {
+			result = s3Service.delete(c.getImage().getImageUrl());
 		}
 		
 		return result;
