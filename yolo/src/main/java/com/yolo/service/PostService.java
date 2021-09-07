@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
+import com.yolo.entity.Comment;
 import com.yolo.entity.Image;
 import com.yolo.entity.Liked;
 import com.yolo.entity.Post;
@@ -107,6 +108,7 @@ public class PostService {
 	public boolean deletePost(Long post_id) {
 		Post post = postRepo.findById(post_id).orElseThrow(EntityNotFoundException::new);
 		List<Image> postImage = post.getImages();
+		List<Comment> comments = post.getComment();
 		
 		postRepo.deleteById(post_id);
 		
@@ -116,7 +118,11 @@ public class PostService {
 		if (postImage.size() != 0) {
 			for (Image image : postImage) {
 				result = s3Service.delete(image.getImageUrl());
-			}	
+			}
+			
+			for (Comment c : comments) {
+				result = s3Service.delete(c.getImage().getImageUrl());
+			}
 		} else {
 			result = true;
 		}
