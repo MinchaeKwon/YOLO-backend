@@ -1,10 +1,9 @@
 package com.yolo.entity;
 
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -16,6 +15,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.yolo.dto.AccountUpdateDto;
+
+import lombok.*;
 
 @Entity
 @Table(name="account", uniqueConstraints={@UniqueConstraint(columnNames={"socialId", "type"})})
@@ -52,6 +53,15 @@ public class Account implements UserDetails {
 	@Column(name="updateAt")
 	@UpdateTimestamp
 	private LocalDateTime updateAt;
+	
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="account", orphanRemoval=true)
+    private List<Post> posts;
+	
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="account", orphanRemoval=true)
+    private List<Comment> comments;
+	
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="account", orphanRemoval=true)
+    private List<Liked> liked;
 	
 	@Builder
 	public Account(String socialId, String type, String auth, String nickname) {

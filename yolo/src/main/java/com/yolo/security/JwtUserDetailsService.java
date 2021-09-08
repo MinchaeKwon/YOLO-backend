@@ -121,29 +121,18 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	// 회원정보에서 이미지만 삭제
 	@Transactional
-	public boolean deleteImage(Account account) {	
+	public boolean deleteImage(Account account) {
 		Image image = account.getImage();
 		System.out.println("삭제할 이미지 url: " + image.getImageUrl() + ", id: " + image.getId());
 		
-//		imageRepo.deleteByAccount(account);
+		int delete = imageRepo.deleteByImageId(image.getId());
 		
-		imageRepo.deleteById(image.getId());
-//		account.getImage().setImageUrl(null);
-//		System.out.println("delete?? " + account.getImage().getImageUrl());
+		boolean result = false;
+		if (delete == 1) {
+			result = s3Service.delete(image.getImageUrl());
+		}
 		
-//		accountRepository.save(account);
-//		boolean result = s3Service.delete(image.getImageUrl());
-		
-//		int delete = imageRepo.deleteByImageUrl(image.getImageUrl());
-//		
-//		boolean result = false;
-//		if (delete > 0) {
-//			System.out.println("제대로 삭제됐나");
-//			result = s3Service.delete(image.getImageUrl());
-//		}
-		
-//		return result;
-		return true;
+		return result;
 		
 	}
 
