@@ -1,6 +1,9 @@
 package com.yolo.security;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,10 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.yolo.dto.AccountDto;
 import com.yolo.dto.AccountUpdateDto;
+import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
 import com.yolo.entity.Image;
+import com.yolo.entity.Post;
 import com.yolo.repository.AccountRepository;
 import com.yolo.repository.ImageRepository;
+import com.yolo.repository.PostRepository;
 import com.yolo.response.SocialUserNotFoundException;
 import com.yolo.service.S3Service;
 
@@ -29,6 +35,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	@Autowired
 	private ImageRepository imageRepo;
+	
+	@Autowired
+	private PostRepository postRepo;
 	
 	private final S3Service s3Service;
 
@@ -133,7 +142,40 @@ public class JwtUserDetailsService implements UserDetailsService {
 		}
 		
 		return result;
+	}
+	
+	// 사용자가 작성한 게시글 가져오기
+	public List<PostDto.My> getMyPost(Account account) {
+		List<Post> postList = postRepo.findByAccountOrderById(account);
+		List<PostDto.My> result = new ArrayList<>();
 		
+		for (Post post : postList) {
+			int cntOfRecommend = post.getRecommend().size(); // 댓글 개수
+			int cntOfComment = post.getComment().size(); // 게시글 좋아요 개수
+			
+			Account post_account = post.getAccount();
+			
+			String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+			
+			Image accountImage = post_account.getImage();
+			String accountImageUrl = null;
+			
+			if (accountImage != null) {
+				accountImageUrl = accountImage.getImageUrl();
+			}
+			
+			List<String> postImage = new ArrayList<>();
+			
+			for (Image image : post.getImages()) {
+				postImage.add(image.getImageUrl());
+			}
+			
+			result.add(new PostDto.My(post.getId(), post_account.getNickname(), accountImageUrl, 
+					post.getContent(), postImage, post.getLatitude(), post.getLongitude(), 
+					createAt, cntOfRecommend, cntOfComment));
+		}
+		
+		return result;
 	}
 
 }

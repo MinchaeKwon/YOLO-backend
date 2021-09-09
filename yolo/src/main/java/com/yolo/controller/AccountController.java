@@ -1,5 +1,8 @@
 package com.yolo.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.yolo.dto.AccountDto;
 import com.yolo.dto.AccountUpdateDto;
+import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
 import com.yolo.entity.Image;
 import com.yolo.response.ErrorResponse;
@@ -112,8 +116,9 @@ public class AccountController {
 		return ResponseEntity.ok().body(new Response("회원정보 수정 성공"));
 	}
 
+	// 사용자 프로필 사진 삭제하기
 	@DeleteMapping("account/profile/image")
-	public ResponseEntity<?> deleteRecipePost(@AuthenticationPrincipal Account account) {
+	public ResponseEntity<?> deleteMyImage(@AuthenticationPrincipal Account account) {
 		boolean result;
 
 		try {
@@ -129,6 +134,25 @@ public class AccountController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));
 		}
 
+	}
+	
+	// 사용자가 커뮤니티에 작성한 게시글 목록 가져오기 -> 최신순
+	@GetMapping("account/post")
+	public ResponseEntity<?> getMyPosts(@AuthenticationPrincipal Account account) {
+		List<PostDto.My> postList = new ArrayList<>();
+
+		try {
+			postList = userDetailService.getMyPost(account);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));
+		}
+
+		if (postList.size() == 0) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("게시글 목록이 없습니다.", "404"));
+		}
+		
+		return ResponseEntity.ok().body(new SuccessResponse<List<PostDto.My>>(postList));
 	}
 
 	// 닉네임 중복 확인 -> 사용 X
