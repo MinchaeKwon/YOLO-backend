@@ -67,7 +67,7 @@ public class CommentController {
 		}
 	}
 
-	// 특정 게시글의 모든 댓글 가져오기
+	// 특정 게시글의 모든 댓글 가져오기 -> 최신순
 	@GetMapping("/community/{postId}/comment")
 	public ResponseEntity<?> getAllPost(@PathVariable("postId") Long postId, @AuthenticationPrincipal Account account) {
 		List<CommentDto.Detail> commentList;

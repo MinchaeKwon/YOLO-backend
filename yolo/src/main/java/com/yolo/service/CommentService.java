@@ -75,7 +75,7 @@ public class CommentService {
 	
 	// 특정 게시글의 모든 댓글 가져오기 -> 최신순
 	public List<CommentDto.Detail> getAllComment(Long postId, Account account) {
-		List<Comment> commentList = commtRepo.findByPostIdOrderById(postId);
+		List<Comment> commentList = commtRepo.findByPostIdOrderByIdDesc(postId);
 		List<CommentDto.Detail> result = new ArrayList<>();
 		
 		for (Comment c : commentList) {

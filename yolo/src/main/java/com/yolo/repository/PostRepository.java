@@ -12,6 +12,6 @@ import com.yolo.entity.Post;
 public interface PostRepository extends JpaRepository<Post, Long>  {
 
 	// 특정 사용자가 작성한 게시글 가져오기
-	List<Post> findByAccountOrderById(Account account);
+	List<Post> findByAccountOrderByIdDesc(Account account);
 	
 }

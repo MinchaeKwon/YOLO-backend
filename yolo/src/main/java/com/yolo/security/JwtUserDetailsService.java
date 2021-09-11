@@ -146,7 +146,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	// 사용자가 작성한 게시글 가져오기
 	public List<PostDto.My> getMyPost(Account account) {
-		List<Post> postList = postRepo.findByAccountOrderById(account);
+		List<Post> postList = postRepo.findByAccountOrderByIdDesc(account);
 		List<PostDto.My> result = new ArrayList<>();
 		
 		for (Post post : postList) {
