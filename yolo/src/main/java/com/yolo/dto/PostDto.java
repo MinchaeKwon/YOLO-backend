@@ -32,8 +32,8 @@ public class PostDto {
 		private String createAt;
 		private boolean isAuthor;
 		private boolean isLiked;
-		private int cntOfComment;
 		private int cntOfLike;
+		private int cntOfComment;
 	}
 	
 	@Getter @Setter
@@ -48,7 +48,7 @@ public class PostDto {
 		private double latitude;
 		private double longitude;
 		private String createAt;
-		private int cntOfComment;
 		private int cntOfLike;
+		private int cntOfComment;
 	}
 }
