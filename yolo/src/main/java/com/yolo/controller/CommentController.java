@@ -100,10 +100,6 @@ public class CommentController {
 					commentList = commtService.getAllComment(postId, account);
 				}
 				
-				if (commentList.size() == 0) {
-					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("댓글 목록이 없습니다.", "404"));
-				}
-				
 				return ResponseEntity.ok().body(new SuccessListResponse<List<CommentDto.Detail>>(commentList.size(), commentList));
 			}
 			else { // 로그인 X
@@ -122,10 +118,6 @@ public class CommentController {
 				}
 				
 				notLoginList = commtService.getAllCommentNotLogin(postId);
-				
-				if (notLoginList.size() == 0) {
-					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("댓글 목록이 없습니다.", "404"));
-				}
 				
 				return ResponseEntity.ok().body(new SuccessListResponse<List<CommentDto.NotLogin>>(notLoginList.size(), notLoginList));
 			}

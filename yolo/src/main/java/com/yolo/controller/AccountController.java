@@ -149,10 +149,6 @@ public class AccountController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));
 		}
 
-		if (postList.size() == 0) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("게시글 목록이 없습니다.", "404"));
-		}
-		
 		return ResponseEntity.ok().body(new SuccessListResponse<List<PostDto.My>>(postList.size(), postList));
 	}
 

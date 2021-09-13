@@ -102,11 +102,7 @@ public class PostController {
 				if (jwtTokenUtil.validateToken(token, userDetails)) {
 					postList = postService.getPostWithPaging(account, page, sort);
 				}
-				
-				if (postList.size() == 0) {
-					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("게시글 목록이 없습니다.", "404"));
-				}
-				
+
 				return ResponseEntity.ok().body(new SuccessListResponse<List<PostDto.Detail>>(postList.size(), postList));
 			}
 			else { // 로그인 X
@@ -125,10 +121,6 @@ public class PostController {
 				}
 				
 				notLoginPostList = postService.getPostWithPagingNotLogin(page, sort);
-				
-				if (notLoginPostList.size() == 0) {
-					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("게시글 목록이 없습니다.", "404"));
-				}
 				
 				return ResponseEntity.ok().body(new SuccessListResponse<List<PostDto.NotLogin>>(notLoginPostList.size(), notLoginPostList));
 			}
