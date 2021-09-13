@@ -39,6 +39,22 @@ public class PostDto {
 	@Getter @Setter
 	@NoArgsConstructor
 	@AllArgsConstructor
+	public static class NotLogin {
+		private Long postId;
+		private String nickname;
+		private String authorImage;
+		private String content;
+		private List<String> imageUrl;
+		private double latitude;
+		private double longitude;
+		private String createAt;
+		private int cntOfLike;
+		private int cntOfComment;
+	}
+	
+	@Getter @Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class My {
 		private Long postId;
 		private String nickname;

@@ -73,7 +73,7 @@ public class CommentService {
 		return result;
 	}
 	
-	// 특정 게시글의 모든 댓글 가져오기 -> 최신순
+	// 특정 게시글의 모든 댓글 가져오기 -> 최신순, 로그인 O
 	public List<CommentDto.Detail> getAllComment(Long postId, Account account) {
 		List<Comment> commentList = commtRepo.findByPostIdOrderByIdDesc(postId);
 		List<CommentDto.Detail> result = new ArrayList<>();
@@ -106,6 +106,37 @@ public class CommentService {
 					c.getContent(), commentImageUrl, createAt, isAuthor));
 		}
 		
+		return result;
+	}
+	
+	// 특정 게시글의 모든 댓글 가져오기 -> 최신순, 로그인 X
+	public List<CommentDto.NotLogin> getAllCommentNotLogin(Long postId) {
+		List<Comment> commentList = commtRepo.findByPostIdOrderByIdDesc(postId);
+		List<CommentDto.NotLogin> result = new ArrayList<>();
+
+		for (Comment c : commentList) {
+			String createAt = c.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+
+			Image commentImage = c.getImage();
+			String commentImageUrl = null;
+
+			if (commentImage != null) {
+				commentImageUrl = commentImage.getImageUrl();
+			}
+
+			Account commtAccount = c.getAccount();
+			
+			Image accountImage = commtAccount.getImage();
+			String accountImageUrl = null;
+
+			if (accountImage != null) {
+				accountImageUrl = accountImage.getImageUrl();
+			}
+
+			result.add(new CommentDto.NotLogin(c.getId(), commtAccount.getNickname(), accountImageUrl, c.getContent(),
+					commentImageUrl, createAt));
+		}
+
 		return result;
 	}
 	

@@ -26,4 +26,16 @@ public class CommentDto {
 		private String createAt;
 		private boolean isAuthor;
 	}
+	
+	@Getter @Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class NotLogin {
+		private Long commentId;
+		private String nickname;
+		private String authorImage;
+		private String content;
+		private String imageUrl;
+		private String createAt;
+	}
 }

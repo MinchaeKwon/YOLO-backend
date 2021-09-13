@@ -25,6 +25,7 @@ import com.yolo.entity.Image;
 import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
 import com.yolo.response.SocialUserNotFoundException;
+import com.yolo.response.SuccessListResponse;
 import com.yolo.response.SuccessResponse;
 import com.yolo.security.JwtRequest;
 import com.yolo.security.JwtResponse;
@@ -138,11 +139,11 @@ public class AccountController {
 	
 	// 사용자가 커뮤니티에 작성한 게시글 목록 가져오기 -> 최신순
 	@GetMapping("account/post")
-	public ResponseEntity<?> getMyPosts(@AuthenticationPrincipal Account account) {
+	public ResponseEntity<?> getMyPosts(@AuthenticationPrincipal Account account, @RequestParam("page") int page) {
 		List<PostDto.My> postList = new ArrayList<>();
 
 		try {
-			postList = userDetailService.getMyPost(account);
+			postList = userDetailService.getMyPost(account, page);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));
@@ -152,7 +153,7 @@ public class AccountController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("게시글 목록이 없습니다.", "404"));
 		}
 		
-		return ResponseEntity.ok().body(new SuccessResponse<List<PostDto.My>>(postList));
+		return ResponseEntity.ok().body(new SuccessListResponse<List<PostDto.My>>(postList.size(), postList));
 	}
 
 	// 닉네임 중복 확인 -> 사용 X

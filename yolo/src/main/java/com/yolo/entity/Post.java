@@ -46,7 +46,7 @@ public class Post {
 	private List<Image> images;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
-	private List<Liked> recommend;
+	private List<Liked> liked;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="post", orphanRemoval=true)
 	private List<Comment> comment;

@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,6 +44,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 	private PostRepository postRepo;
 	
 	private final S3Service s3Service;
+	
+	private int ELE_SIZE = 10;
 
 	// 시큐리티에서 지정한 서비스이기 때문에 이 메소드를 필수로 구현
 	public UserDetails loadUserByUsername(String socialId) throws UsernameNotFoundException {
@@ -145,13 +151,15 @@ public class JwtUserDetailsService implements UserDetailsService {
 	}
 	
 	// 사용자가 작성한 게시글 가져오기
-	public List<PostDto.My> getMyPost(Account account) {
-		List<Post> postList = postRepo.findByAccountOrderByIdDesc(account);
+	public List<PostDto.My> getMyPost(Account account, int page) {
+		Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("id").descending());
+		Page<Post> postList = postRepo.findByAccount(account, pageable);
+		
 		List<PostDto.My> result = new ArrayList<>();
 		
 		for (Post post : postList) {
-			int cntOfRecommend = post.getRecommend().size(); // 댓글 개수
-			int cntOfComment = post.getComment().size(); // 게시글 좋아요 개수
+			int cntOfRecommend = post.getLiked().size(); // 게시글 좋아요 개수
+			int cntOfComment = post.getComment().size(); // 댓글 개수
 			
 			Account post_account = post.getAccount();
 			

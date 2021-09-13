@@ -1,5 +1,6 @@
 package com.yolo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,20 +8,26 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yolo.dto.CommentDto;
 import com.yolo.entity.Account;
 import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
+import com.yolo.response.SuccessListResponse;
 import com.yolo.response.SuccessResponse;
+import com.yolo.security.JwtTokenUtil;
+import com.yolo.security.JwtUserDetailsService;
 import com.yolo.service.CommentService;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,6 +36,12 @@ public class CommentController {
 
 	@Autowired
 	CommentService commtService;
+	
+	@Autowired
+	private JwtUserDetailsService userDetailService;
+	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 
 	// 댓글 작성하기
 	@PostMapping(value = "/community/{postId}/comment")
@@ -69,21 +82,62 @@ public class CommentController {
 
 	// 특정 게시글의 모든 댓글 가져오기 -> 최신순
 	@GetMapping("/community/{postId}/comment")
-	public ResponseEntity<?> getAllPost(@PathVariable("postId") Long postId, @AuthenticationPrincipal Account account) {
-		List<CommentDto.Detail> commentList;
+	public ResponseEntity<?> getAllPost(@PathVariable("postId") Long postId, @AuthenticationPrincipal Account account, 
+			@RequestHeader(value="Authorization", required=false) String token) {
+		
+		List<CommentDto.Detail> commentList = new ArrayList<>();
+		List<CommentDto.NotLogin> notLoginList = new ArrayList<>();
+		
 		try {
-			commentList = commtService.getAllComment(postId, account);
+			// 로그인 O
+			if (account != null) {
+				token = token.substring(7, token.length());
+				System.out.println("token: " + token);
+
+				UserDetails userDetails = userDetailService.loadUserBySocialIdAndType(account.getSocialId(), account.getType());
+
+				if (jwtTokenUtil.validateToken(token, userDetails)) {
+					commentList = commtService.getAllComment(postId, account);
+				}
+				
+				if (commentList.size() == 0) {
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("댓글 목록이 없습니다.", "404"));
+				}
+				
+				return ResponseEntity.ok().body(new SuccessListResponse<List<CommentDto.Detail>>(commentList.size(), commentList));
+			}
+			else { // 로그인 X
+				// 헤더에 토큰이 null이 아닐 경우 토큰이 유효한지 확인
+				if (token != null) {
+					
+					// 프론트에서 로그인 안했을때 자동으로 Autorization: null을 넘겨주는데 이때 null이 문자열이어서 이곳에서 확인해줘야함
+//					if (token.equals("null")) {
+//						notLoginPost = postService.getPostNotLogin(id);
+//						return ResponseEntity.ok().body(new SuccessResponse<PostDto.DetailNotLogin>(notLoginPost));
+//					}
+					
+					// 토큰이 유효한지 확인하기 위함
+					token = token.substring(7);
+					jwtTokenUtil.getUsernameFromToken(token);
+				}
+				
+				notLoginList = commtService.getAllCommentNotLogin(postId);
+				
+				if (notLoginList.size() == 0) {
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("댓글 목록이 없습니다.", "404"));
+				}
+				
+				return ResponseEntity.ok().body(new SuccessListResponse<List<CommentDto.NotLogin>>(notLoginList.size(), notLoginList));
+			}
+			
+		} catch (ExpiredJwtException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("토큰이 유효하지 않습니다.", "401"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ErrorResponse("댓글 목록을 가져오는 도중 오류가 발생했습니다.", "500"));
 		}
 
-		if (commentList.size() == 0) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("댓글 목록이 없습니다.", "404"));
-		}
-
-		return ResponseEntity.ok().body(new SuccessResponse<List<CommentDto.Detail>>(commentList));
 	}
 
 }

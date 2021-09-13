@@ -8,6 +8,10 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,6 +46,8 @@ public class PostService {
 	
 	private final S3Service s3Service;
 	
+	private int ELE_SIZE = 20;
+	
 	// 게시글 작성하기
 	@Transactional
 	public Long savePost(PostDto info, Account account) throws IOException {
@@ -62,44 +68,103 @@ public class PostService {
 		return post.getId();
 	}
 	
-	// 모든 게시글 가져오기 -> 로그인된 경우
-	public List<PostDto.Detail> getAllPost(Account account) {
-		List<Post> postList = postRepo.findAll();
-		List<PostDto.Detail> result = new ArrayList<>();
+	// 모든 게시글 가져오기 -> 로그인 O
+	@Transactional
+	public List<PostDto.Detail> getPostWithPaging(Account account, int page, String sort) {
+		Page<Post> postList = null;
 		
-		for (Post post : postList) {
-			int cntOfRecommend = post.getRecommend().size(); // 댓글 개수
-			int cntOfComment = post.getComment().size(); // 게시글 좋아요 개수
-			
-			Account post_account = post.getAccount();
-			boolean isAuthor = false;
-			
-			// 게시글 작성자인지 확인
-			if (account.getId() == post_account.getId()) {
-				isAuthor = true;
-			}
-			
-			boolean isLiked = likedRepo.existsByPostAndAccount(post, account); // 게시글 좋아요 했는지 확인
-			String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
-			
-			Image accountImage = post_account.getImage();
-			String accountImageUrl = null;
-			
-			if (accountImage != null) {
-				accountImageUrl = accountImage.getImageUrl();
-			}
-			
-			List<String> postImage = new ArrayList<>();
-			
-			for (Image image : post.getImages()) {
-				postImage.add(image.getImageUrl());
-			}
-			
-			result.add(new PostDto.Detail(post.getId(), post_account.getNickname(), accountImageUrl, 
-					post.getContent(), postImage, post.getLatitude(), post.getLongitude(), 
-					createAt, isAuthor, isLiked, cntOfRecommend, cntOfComment));
+		if (sort.equals("createAt")) {
+			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("id").descending());
+			postList = postRepo.findAll(pageable);
+		}
+		else if (sort.equals("liked")) {
+			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE);
+			postList = postRepo.findAlOrderByLiked(pageable);
 		}
 		
+		List<PostDto.Detail> result = new ArrayList<>();
+		
+		if (postList != null) {
+			for (Post post : postList) {
+				int cntOfRecommend = post.getLiked().size(); // 게시글 좋아요 개수
+				int cntOfComment = post.getComment().size(); // 댓글 개수
+				
+				Account post_account = post.getAccount();
+				boolean isAuthor = false;
+				
+				// 게시글 작성자인지 확인
+				if (account.getId() == post_account.getId()) {
+					isAuthor = true;
+				}
+				
+				Image accountImage = post_account.getImage();
+				String accountImageUrl = null;
+				
+				if (accountImage != null) {
+					accountImageUrl = accountImage.getImageUrl();
+				}
+				
+				List<String> postImage = new ArrayList<>();
+				
+				for (Image image : post.getImages()) {
+					postImage.add(image.getImageUrl());
+				}
+				
+				boolean isLiked = likedRepo.existsByPostAndAccount(post, account); // 게시글 좋아요 했는지 확인
+				String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+				
+				result.add(new PostDto.Detail(post.getId(), post_account.getNickname(), accountImageUrl, 
+						post.getContent(), postImage, post.getLatitude(), post.getLongitude(), 
+						createAt, isAuthor, isLiked, cntOfRecommend, cntOfComment));
+			}	
+		}
+		
+		return result;
+	}
+	
+	// 모든 게시글 가져오기 -> 로그인 X
+	@Transactional
+	public List<PostDto.NotLogin> getPostWithPagingNotLogin(int page, String sort) {
+		Page<Post> postList = null;
+
+		if (sort.equals("createAt")) {
+			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("id").descending());
+			postList = postRepo.findAll(pageable);
+		}
+		else if (sort.equals("liked")) {
+			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE);
+			postList = postRepo.findAlOrderByLiked(pageable);
+		}
+
+		List<PostDto.NotLogin> result = new ArrayList<>();
+
+		if (postList != null) {
+			for (Post post : postList) {
+				int cntOfRecommend = post.getLiked().size(); // 게시글 좋아요 개수
+				int cntOfComment = post.getComment().size(); // 댓글 개수
+
+				Account post_account = post.getAccount();
+
+				Image accountImage = post_account.getImage();
+				String accountImageUrl = null;
+
+				if (accountImage != null) {
+					accountImageUrl = accountImage.getImageUrl();
+				}
+
+				List<String> postImage = new ArrayList<>();
+
+				for (Image image : post.getImages()) {
+					postImage.add(image.getImageUrl());
+				}
+				
+				String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+
+				result.add(new PostDto.NotLogin(post.getId(), post_account.getNickname(), accountImageUrl,
+						post.getContent(), postImage, post.getLatitude(), post.getLongitude(), createAt, cntOfRecommend, cntOfComment));
+			}
+		}
+
 		return result;
 	}
 	
