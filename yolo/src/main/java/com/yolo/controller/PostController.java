@@ -47,7 +47,7 @@ public class PostController {
 	
 	// 게시글 작성하기
 	@PostMapping(value = "/community")
-	public ResponseEntity<?> createRecipePost(@ModelAttribute PostDto info, @AuthenticationPrincipal Account account) {
+	public ResponseEntity<?> createPost(@ModelAttribute PostDto info, @AuthenticationPrincipal Account account) {
 		Long postId;
 
 		try {
@@ -62,7 +62,7 @@ public class PostController {
 	
 	// 특정 게시글 삭제하기
 	@DeleteMapping("/community/{id}")
-	public ResponseEntity<?> deleteRecipePost(@PathVariable("id") Long id) {
+	public ResponseEntity<?> deletePost(@PathVariable("id") Long id) {
 		boolean result;
 		
 		try {

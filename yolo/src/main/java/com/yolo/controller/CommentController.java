@@ -45,7 +45,7 @@ public class CommentController {
 
 	// 댓글 작성하기
 	@PostMapping(value = "/community/{postId}/comment")
-	public ResponseEntity<?> createRecipePost(@PathVariable("postId") Long postId, @ModelAttribute CommentDto info, @AuthenticationPrincipal Account account) {
+	public ResponseEntity<?> createComment(@PathVariable("postId") Long postId, @ModelAttribute CommentDto info, @AuthenticationPrincipal Account account) {
 		Long commentId;
 
 		try {
@@ -60,7 +60,7 @@ public class CommentController {
 
 	// 특정 댓글 삭제하기
 	@DeleteMapping("/community/comment/{commentId}")
-	public ResponseEntity<?> deleteRecipePost(@PathVariable("commentId") Long id) {
+	public ResponseEntity<?> deleteComment(@PathVariable("commentId") Long id) {
 		boolean result;
 		
 		try {
@@ -82,7 +82,7 @@ public class CommentController {
 
 	// 특정 게시글의 모든 댓글 가져오기 -> 최신순
 	@GetMapping("/community/{postId}/comment")
-	public ResponseEntity<?> getAllPost(@PathVariable("postId") Long postId, @AuthenticationPrincipal Account account, 
+	public ResponseEntity<?> getAllComment(@PathVariable("postId") Long postId, @AuthenticationPrincipal Account account, 
 			@RequestHeader(value="Authorization", required=false) String token) {
 		
 		List<CommentDto.Detail> commentList = new ArrayList<>();
