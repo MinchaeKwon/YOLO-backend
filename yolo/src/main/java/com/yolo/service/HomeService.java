@@ -18,21 +18,15 @@ public class HomeService {
 	@Autowired
 	PlaceRepository placeRepo;
 	
-	// 식당 9개 가져오기
-	public List<PlaceDto> getFoodPlace() {
-		List<Place> placeList = placeRepo.findAllByTypeOrderById(0);
-		List<PlaceDto> result = new ArrayList<>();
+	// 식당, 장소 9개 가져오기
+	public List<PlaceDto> getPlace(int type) {
+		List<Place> placeList;
 		
-		for (Place p : placeList) {
-			result.add(new PlaceDto(p.getSearchRanking(), p.getName(), p.getAddress()));
+		if (type == 0) {
+			placeList = placeRepo.findAllByTypeOrderById(0);
+		} else {
+			placeList = placeRepo.findAllByTypeOrderById(1);
 		}
-		
-		return result;
-	}
-	
-	// 장소 9개 가져오기
-	public List<PlaceDto> getNotFoodPlace() {
-		List<Place> placeList = placeRepo.findAllByTypeOrderById(1);
 		List<PlaceDto> result = new ArrayList<>();
 		
 		for (Place p : placeList) {

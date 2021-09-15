@@ -24,12 +24,12 @@ public class HomeController {
 	@GetMapping("/home")
 	public ResponseEntity<?> getHomeInfo() {
 		List<String> camping = null;
-		List<PlaceDto> foodList = homeService.getFoodPlace();
-		List<PlaceDto> NotFoodList = homeService.getNotFoodPlace();
+		List<PlaceDto> foodList = homeService.getPlace(0);
+		List<PlaceDto> NotFoodList = homeService.getPlace(1);
 		
 		HomeDto home = new HomeDto(camping, foodList, NotFoodList);
 		
-		return ResponseEntity.ok().body(new SuccessResponse<HomeDto>(home));
+		return ResponseEntity.ok().body(new SuccessResponse<HomeDto>(200, home));
 	}
 
 }

@@ -50,10 +50,10 @@ public class AccountController {
 			userDetailService.save(info);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("회원가입을 하는 도중 오류가 발생했습니다.", "500"));
+					.body(new ErrorResponse("회원가입을 하는 도중 오류가 발생했습니다.", 500));
 		}
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(new Response("회원가입을 성공적으로 완료했습니다."));
+		return ResponseEntity.status(HttpStatus.CREATED).body(new Response("회원가입을 성공적으로 완료했습니다.", 200));
 	}
 
 	// 소셜 로그인
@@ -70,7 +70,7 @@ public class AccountController {
 
 		} catch (SocialUserNotFoundException e) {
 			// 문자열로 보내지말고 int로 1234 이런식으로 보내기
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 회원정보가 없습니다.", "404"));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 회원정보가 없습니다.", 404));
 		}
 
 		return ResponseEntity.ok(new JwtResponse(token));
@@ -88,7 +88,7 @@ public class AccountController {
 
 		AccountDto.Profile profile = new AccountDto.Profile(account.getId(), account.getSocialId(), account.getType(),
 				account.getNickname(), imageUrl);
-		return ResponseEntity.ok().body(new SuccessResponse<AccountDto.Profile>(profile));
+		return ResponseEntity.ok().body(new SuccessResponse<AccountDto.Profile>(200, profile));
 	}
 
 	// 사용자 id로 정보 가져오기
@@ -99,10 +99,10 @@ public class AccountController {
 		try {
 			account = userDetailService.loadUserById(accountId);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 회원정보가 없습니다.", "404"));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 회원정보가 없습니다.", 404));
 		}
 
-		return ResponseEntity.ok().body(new SuccessResponse<AccountDto.Profile>(account));
+		return ResponseEntity.ok().body(new SuccessResponse<AccountDto.Profile>(200, account));
 	}
 
 	// 회원정보 수정
@@ -111,10 +111,10 @@ public class AccountController {
 		try {
 			userDetailService.updateAccount(infoDto, account);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("회원정보 수정 실패", "500"));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("회원정보 수정 실패", 500));
 		}
 
-		return ResponseEntity.ok().body(new Response("회원정보 수정 성공"));
+		return ResponseEntity.ok().body(new Response("회원정보 수정 성공", 200));
 	}
 
 	// 사용자 프로필 사진 삭제하기
@@ -126,13 +126,13 @@ public class AccountController {
 			result = userDetailService.deleteImage(account);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", 500));
 		}
 
 		if (result) {
-			return ResponseEntity.ok().body(new Response("이미지 삭제 성공"));
+			return ResponseEntity.ok().body(new Response("이미지 삭제 성공", 200));
 		} else {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", 500));
 		}
 
 	}
@@ -146,19 +146,19 @@ public class AccountController {
 			postList = userDetailService.getMyPost(account, page);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", "500"));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", 500));
 		}
 
-		return ResponseEntity.ok().body(new SuccessListResponse<List<PostDto.My>>(postList.size(), postList));
+		return ResponseEntity.ok().body(new SuccessListResponse<List<PostDto.My>>(200, postList.size(), postList));
 	}
 
 	// 닉네임 중복 확인 -> 사용 X
 	@GetMapping("/nickname/exist")
 	public ResponseEntity<?> isExistName(@RequestParam("nickname") String nickname) {
 		if (userDetailService.isExistNickname(nickname)) {
-			return ResponseEntity.ok().body(new Response("이미 존재하는 닉네임입니다."));
+			return ResponseEntity.ok().body(new Response("이미 존재하는 닉네임입니다.", 200));
 		} else {
-			return ResponseEntity.ok().body(new Response("사용 가능한 닉네임입니다."));
+			return ResponseEntity.ok().body(new Response("사용 가능한 닉네임입니다.", 200));
 		}
 	}
 
