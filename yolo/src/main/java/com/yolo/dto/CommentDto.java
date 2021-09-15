@@ -30,7 +30,7 @@ public class CommentDto {
 	@Getter @Setter
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class NotLogin {
+	public static class Common {
 		private Long commentId;
 		private String nickname;
 		private String authorImage;

@@ -54,8 +54,9 @@ public class S3Service {
 	}
 
 	public String upload(MultipartFile file, String dirName, String fileName) throws IOException {
-//    	String finalName = dirName + "/" + fileName; 
-
+		fileName = fileName.replaceAll("\\s", "");
+		System.out.println("공백 제거된 파일 이름: " + fileName);
+		
 		int dateTime = (int) (new Date().getTime() / 1000);
 		String filePath = dirName + "/" + dateTime + fileName; // 현재 날짜, 시간을 기준으로 구별값 첨부 -> 중복 방지
 

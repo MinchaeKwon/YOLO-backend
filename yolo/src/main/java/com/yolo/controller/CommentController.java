@@ -46,16 +46,16 @@ public class CommentController {
 	// 댓글 작성하기
 	@PostMapping(value = "/community/{postId}/comment")
 	public ResponseEntity<?> createComment(@PathVariable("postId") Long postId, @ModelAttribute CommentDto info, @AuthenticationPrincipal Account account) {
-		Long commentId;
+		CommentDto.Common result;
 
 		try {
-			commentId = commtService.save(postId, info, account);
+			result = commtService.save(postId, info, account);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 작성 실패", "500"));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 작성 실패", 500));
 		}
 
-		return ResponseEntity.ok().body(new SuccessResponse<Long>(commentId));
+		return ResponseEntity.ok().body(new SuccessResponse<CommentDto.Common>(200, result));
 	}
 
 	// 특정 댓글 삭제하기
@@ -67,16 +67,16 @@ public class CommentController {
 			result = commtService.delete(id);
 		} catch (EmptyResultDataAccessException e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 댓글 정보가 없습니다.", "404"));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 댓글 정보가 없습니다.", 404));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 삭제 실패", "500"));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 삭제 실패", 500));
 		}
 
 		if (result) {
-			return ResponseEntity.ok().body(new Response("댓글 삭제 성공"));	
+			return ResponseEntity.ok().body(new Response("댓글 삭제 성공", 200));	
 		} else {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 삭제 실패", "500"));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 삭제 실패", 500));
 		}
 	}
 
@@ -86,7 +86,7 @@ public class CommentController {
 			@RequestHeader(value="Authorization", required=false) String token) {
 		
 		List<CommentDto.Detail> commentList = new ArrayList<>();
-		List<CommentDto.NotLogin> notLoginList = new ArrayList<>();
+		List<CommentDto.Common> notLoginList = new ArrayList<>();
 		
 		try {
 			// 로그인 O
@@ -100,7 +100,7 @@ public class CommentController {
 					commentList = commtService.getAllComment(postId, account);
 				}
 				
-				return ResponseEntity.ok().body(new SuccessListResponse<List<CommentDto.Detail>>(commentList.size(), commentList));
+				return ResponseEntity.ok().body(new SuccessListResponse<List<CommentDto.Detail>>(200, commentList.size(), commentList));
 			}
 			else { // 로그인 X
 				// 헤더에 토큰이 null이 아닐 경우 토큰이 유효한지 확인
@@ -119,15 +119,15 @@ public class CommentController {
 				
 				notLoginList = commtService.getAllCommentNotLogin(postId);
 				
-				return ResponseEntity.ok().body(new SuccessListResponse<List<CommentDto.NotLogin>>(notLoginList.size(), notLoginList));
+				return ResponseEntity.ok().body(new SuccessListResponse<List<CommentDto.Common>>(200, notLoginList.size(), notLoginList));
 			}
 			
 		} catch (ExpiredJwtException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("토큰이 유효하지 않습니다.", "401"));
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("토큰이 유효하지 않습니다.", 401));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("댓글 목록을 가져오는 도중 오류가 발생했습니다.", "500"));
+					.body(new ErrorResponse("댓글 목록을 가져오는 도중 오류가 발생했습니다.", 500));
 		}
 
 	}

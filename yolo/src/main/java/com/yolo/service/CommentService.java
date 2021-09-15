@@ -39,21 +39,38 @@ public class CommentService {
 	
 	// 댓글 작성
 	@Transactional
-	public Long save(Long postId, CommentDto dto, Account account) throws IOException {
+	public CommentDto.Common save(Long postId, CommentDto dto, Account account) throws IOException {
 		Post post = postRepo.findById(postId).get();
 		
 		Comment comment = commtRepo.save(Comment.builder().content(dto.getContent()).account(account).post(post).build());
+		
+		String imageUrl = null;
 		
 		// 이미지 S3에 업로드 후 image 테이블에 url 저장
 		// 이미지 파일이 있을 경우에만 업로드
 		if (dto.getImage() != null) {
 			System.out.println("댓글 들어온 이미지: " + dto.getImage().getOriginalFilename());
 			
-			String imageUrl = s3Service.upload(dto.getImage(), "images");
+			imageUrl = s3Service.upload(dto.getImage(), "images");
 			imageRepo.save(Image.builder().imageUrl(imageUrl).comment(comment).build());
 		}
 		
-		return comment.getId();
+		
+		String createAt = comment.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+
+		Account commtAccount = comment.getAccount();
+		
+		Image accountImage = commtAccount.getImage();
+		String accountImageUrl = null;
+
+		if (accountImage != null) {
+			accountImageUrl = accountImage.getImageUrl();
+		}
+
+		CommentDto.Common result = new CommentDto.Common(comment.getId(), commtAccount.getNickname(), accountImageUrl, 
+				comment.getContent(), imageUrl, createAt);
+		
+		return result;
 	}
 	
 	// 댓글 삭제
@@ -110,9 +127,9 @@ public class CommentService {
 	}
 	
 	// 특정 게시글의 모든 댓글 가져오기 -> 최신순, 로그인 X
-	public List<CommentDto.NotLogin> getAllCommentNotLogin(Long postId) {
+	public List<CommentDto.Common> getAllCommentNotLogin(Long postId) {
 		List<Comment> commentList = commtRepo.findByPostIdOrderByIdDesc(postId);
-		List<CommentDto.NotLogin> result = new ArrayList<>();
+		List<CommentDto.Common> result = new ArrayList<>();
 
 		for (Comment c : commentList) {
 			String createAt = c.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
@@ -133,7 +150,7 @@ public class CommentService {
 				accountImageUrl = accountImage.getImageUrl();
 			}
 
-			result.add(new CommentDto.NotLogin(c.getId(), commtAccount.getNickname(), accountImageUrl, c.getContent(),
+			result.add(new CommentDto.Common(c.getId(), commtAccount.getNickname(), accountImageUrl, c.getContent(),
 					commentImageUrl, createAt));
 		}
 

@@ -61,6 +61,7 @@ public class PostService {
 				System.out.println("게시글 들어온 이미지: " + image.getOriginalFilename());
 				
 				String imageUrl = s3Service.upload(image, "images");
+				System.out.println("업로드 된 게시글 url: " + imageUrl);
 				imageRepo.save(Image.builder().imageUrl(imageUrl).post(post).build()).getId();
 			}
 		}
@@ -180,14 +181,21 @@ public class PostService {
 		// S3에 업로드된 사진도 삭제
 		boolean result = true;
 		
-		if (postImage.size() != 0) {
+		if (postImage != null) {
+			System.out.println("게시글 사진 있음!!!");
 			for (Image image : postImage) {
 				result = s3Service.delete(image.getImageUrl());
 			}
+		} else {
+			System.out.println("게시글 사진 없음");
 		}
 		
 		for (Comment c : comments) {
-			result = s3Service.delete(c.getImage().getImageUrl());
+			Image image = c.getImage();
+			
+			if (image != null) {
+				result = s3Service.delete(c.getImage().getImageUrl());	
+			}
 		}
 		
 		return result;
