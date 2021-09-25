@@ -9,6 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceDto {
+	private String date;
+	private Integer placeId;
+	private String imageUrl;
 	private int ranking;
 	private String name;
 	private String address;

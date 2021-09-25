@@ -23,6 +23,12 @@ public class Place {
 	@Column(updatable = false)
 	private long id;
 	
+	@Column(name="placeId")
+	private Integer placeId;
+	
+	@Column(name="imageUrl")
+	private String imageUrl;
+	
 	@Column(name="cityCode")
 	private int cityCode;
 	

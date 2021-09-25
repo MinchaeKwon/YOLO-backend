@@ -27,10 +27,11 @@ public class HomeService {
 		} else {
 			placeList = placeRepo.findAllByTypeOrderById(1);
 		}
+		
 		List<PlaceDto> result = new ArrayList<>();
 		
 		for (Place p : placeList) {
-			result.add(new PlaceDto(p.getSearchRanking(), p.getName(), p.getAddress()));
+			result.add(new PlaceDto(p.getDate(), p.getPlaceId(), p.getImageUrl(), p.getSearchRanking(), p.getName(), p.getAddress()));
 		}
 		
 		return result;
