@@ -24,32 +24,32 @@ public class Travel {
 	@Column(updatable = false)
 	private long id;
 	
+	@Column(name="predictNum")
+	private int predictNum;
+	
+	@Column(name="predictRate")
+	private int predictRate;
+	
 	@Column(name="contentId")
 	private int contentId;
+	
+	@Column(name="name")
+	private String name;
 	
 	@Column(name="congestion")
 	private int congestion;
 	
-	@Column(name="address")
-	private String address;
-	
-	@Column(name="imageUrl")
-	private String imageUrl;
-	
-	@Column(name="title")
-	private String title;
-	
-	@Column(name="contentTypeId")
-	private String contentTypeId;
+	@Column(name="divisionCode")
+	private int divisionCode;
 	
 	@Builder
-	public Travel(int contentId, int congestion, String address, String imageUrl, String title, String contentTypeId) {
+	public Travel(int predictNum, int predictRate, int contentId, String name, int congestion, int divisionCode) {
+		this.predictNum = predictNum;
+		this.predictRate = predictRate;
 		this.contentId = contentId;
+		this.name = name;
 		this.congestion = congestion;
-		this.address = address;
-		this.imageUrl = imageUrl;
-		this.title = title;
-		this.contentTypeId = contentTypeId;
+		this.divisionCode = divisionCode;
 	}
 	
 }
