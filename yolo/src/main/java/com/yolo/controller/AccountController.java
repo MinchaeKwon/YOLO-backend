@@ -151,6 +151,20 @@ public class AccountController {
 
 		return ResponseEntity.ok().body(new SuccessListResponse<List<PostDto.My>>(200, postList.size(), postList));
 	}
+	
+	// 기기 토큰 등록하는 api -> fcm에 사용하기 위한 토큰
+	@PostMapping("account/token")
+	public ResponseEntity<?> registToken(@AuthenticationPrincipal Account account, @RequestParam("token") String token) {
+		try {
+			if(!token.equals(account.getRegistrationToken())) {
+				userDetailService.modifyRegistrationToken(token, account);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return ResponseEntity.ok().body(new Response("토큰 등록 성공", 200));
+	}
 
 	// 닉네임 중복 확인 -> 사용 X
 	@GetMapping("/nickname/exist")

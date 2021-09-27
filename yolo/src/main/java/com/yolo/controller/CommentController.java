@@ -2,6 +2,7 @@ package com.yolo.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.yolo.dto.CommentDto;
 import com.yolo.entity.Account;
+import com.yolo.entity.Post;
+import com.yolo.firebase.FCMService;
 import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
 import com.yolo.response.SuccessListResponse;
@@ -42,20 +45,33 @@ public class CommentController {
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private FCMService fcmService;
 
 	// 댓글 작성하기
 	@PostMapping(value = "/community/{postId}/comment")
 	public ResponseEntity<?> createComment(@PathVariable("postId") Long postId, @ModelAttribute CommentDto info, @AuthenticationPrincipal Account account) {
-		CommentDto.Common result;
+		Map<String, Object> result;
+		CommentDto.Common commt;
+		Post post;
 
 		try {
 			result = commtService.save(postId, info, account);
+			
+			commt = (CommentDto.Common) result.get("commentDto");
+			post = (Post) result.get("post");
+			
+			// 게시글 작성자에게 푸시 알림 보내기
+			if(post.getAccount().isCommentPush()) {
+				fcmService.sendCommentToToken(post.getAccount().getRegistrationToken());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("댓글 작성 실패", 500));
 		}
 
-		return ResponseEntity.ok().body(new SuccessResponse<CommentDto.Common>(200, result));
+		return ResponseEntity.ok().body(new SuccessResponse<CommentDto.Common>(200, commt));
 	}
 
 	// 특정 댓글 삭제하기

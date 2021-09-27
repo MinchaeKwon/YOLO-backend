@@ -185,5 +185,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 		
 		return result;
 	}
+	
+	@Transactional
+	public void modifyRegistrationToken(String token, Account account) {
+		account.setRegistrationToken(token);
+		accountRepository.save(account);
+	}
 
 }

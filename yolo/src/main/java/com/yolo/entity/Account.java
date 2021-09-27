@@ -63,12 +63,18 @@ public class Account implements UserDetails {
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="account", orphanRemoval=true)
     private List<Liked> liked;
 	
+	@Column(name = "registrationToken")
+    private String registrationToken;
+	
+	private boolean commentPush;
+	
 	@Builder
 	public Account(String socialId, String type, String auth, String nickname) {
 		this.socialId = socialId;
 		this.type = type;
 		this.auth = auth;
 		this.nickname = nickname;
+		this.commentPush = true;
 	}
 	
 	public void update(AccountUpdateDto infoDto) {

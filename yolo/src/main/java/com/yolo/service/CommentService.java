@@ -3,7 +3,9 @@ package com.yolo.service;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -39,7 +41,7 @@ public class CommentService {
 	
 	// 댓글 작성
 	@Transactional
-	public CommentDto.Common save(Long postId, CommentDto dto, Account account) throws IOException {
+	public Map<String, Object> save(Long postId, CommentDto dto, Account account) throws IOException {
 		Post post = postRepo.findById(postId).get();
 		
 		Comment comment = commtRepo.save(Comment.builder().content(dto.getContent()).account(account).post(post).build());
@@ -70,7 +72,12 @@ public class CommentService {
 		CommentDto.Common result = new CommentDto.Common(comment.getId(), commtAccount.getNickname(), accountImageUrl, 
 				comment.getContent(), imageUrl, createAt);
 		
-		return result;
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("commentDto", result);
+		map.put("post", post);
+		
+		return map;
 	}
 	
 	// 댓글 삭제
