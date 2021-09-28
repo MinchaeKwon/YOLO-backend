@@ -176,10 +176,8 @@ public class PostService {
 		List<Image> postImage = post.getImages();
 		List<Comment> comments = post.getComment();
 		
-		postRepo.deleteById(post_id);
-		
 		// S3에 업로드된 사진도 삭제
-		boolean result = true;
+		boolean result = false;
 		
 		if (postImage != null) {
 			System.out.println("게시글 사진 있음!!!");
@@ -196,6 +194,10 @@ public class PostService {
 			if (image != null) {
 				result = s3Service.delete(c.getImage().getImageUrl());	
 			}
+		}
+		
+		if (result) {
+			postRepo.deleteById(post_id);
 		}
 		
 		return result;

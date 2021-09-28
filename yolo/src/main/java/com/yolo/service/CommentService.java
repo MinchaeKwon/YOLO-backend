@@ -86,12 +86,14 @@ public class CommentService {
 		Comment comment = commtRepo.findById(commentId).orElseThrow(EntityNotFoundException::new);
 		Image commtImage = comment.getImage();
 		
-		commtRepo.deleteById(commentId);
-		
-		boolean result = true;
+		boolean result = false;
 		
 		if (commtImage != null) {
 			result = s3Service.delete(commtImage.getImageUrl());
+		}
+		
+		if (result) {
+			commtRepo.deleteById(commentId);
 		}
 		
 		return result;

@@ -129,8 +129,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 		}
 		
 		Account updateAccount = (Account) loadUserBySocialIdAndType(account.getSocialId(), account.getType());
-		
 		updateAccount.update(infoDto);
+		
 		return accountRepository.save(updateAccount).getId();
 	}
 	
@@ -140,14 +140,18 @@ public class JwtUserDetailsService implements UserDetailsService {
 		Image image = account.getImage();
 		System.out.println("삭제할 이미지 url: " + image.getImageUrl() + ", id: " + image.getId());
 		
-		int delete = imageRepo.deleteByImageId(image.getId());
+		boolean delete = s3Service.delete(image.getImageUrl());
+		int result = 0;
 		
-		boolean result = false;
-		if (delete == 1) {
-			result = s3Service.delete(image.getImageUrl());
+		if (delete) {
+			result = imageRepo.deleteByImageId(image.getId());
 		}
 		
-		return result;
+		if (result == 1) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	// 사용자가 작성한 게시글 가져오기
@@ -186,6 +190,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 		return result;
 	}
 	
+	// 사용자 토큰 수정 -> FCM에 사용
 	@Transactional
 	public void modifyRegistrationToken(String token, Account account) {
 		account.setRegistrationToken(token);
