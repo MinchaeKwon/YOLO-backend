@@ -42,7 +42,7 @@ public class CommentService {
 	// 댓글 작성
 	@Transactional
 	public Map<String, Object> save(Long postId, CommentDto dto, Account account) throws IOException {
-		Post post = postRepo.findById(postId).get();
+		Post post = postRepo.findById(postId).orElseThrow(EntityNotFoundException::new);
 		
 		Comment comment = commtRepo.save(Comment.builder().content(dto.getContent()).account(account).post(post).build());
 		
@@ -92,11 +92,12 @@ public class CommentService {
 			result = s3Service.delete(commtImage.getImageUrl());
 		}
 		
-		if (result) {
+		if (commtImage == null || result) {
 			commtRepo.deleteById(commentId);
+			return true;
 		}
 		
-		return result;
+		return false;
 	}
 	
 	// 특정 게시글의 모든 댓글 가져오기 -> 최신순, 로그인 O

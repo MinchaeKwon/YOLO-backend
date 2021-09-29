@@ -179,8 +179,9 @@ public class PostService {
 		// S3에 업로드된 사진도 삭제
 		boolean result = false;
 		
-		if (postImage != null) {
+		if (postImage.size() != 0) {
 			System.out.println("게시글 사진 있음!!!");
+			
 			for (Image image : postImage) {
 				result = s3Service.delete(image.getImageUrl());
 			}
@@ -196,11 +197,12 @@ public class PostService {
 			}
 		}
 		
-		if (result) {
+		if (postImage.size() == 0 || result) {
 			postRepo.deleteById(post_id);
+			return true;
 		}
 		
-		return result;
+		return false;
 	}
 	
 	// 게시글 좋아요
