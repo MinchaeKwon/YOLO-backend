@@ -22,9 +22,11 @@ import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
 import com.yolo.entity.Image;
 import com.yolo.entity.Post;
+import com.yolo.entity.WithdrewAccount;
 import com.yolo.repository.AccountRepository;
 import com.yolo.repository.ImageRepository;
 import com.yolo.repository.PostRepository;
+import com.yolo.repository.WithdrewAccountRepository;
 import com.yolo.response.SocialUserNotFoundException;
 import com.yolo.service.S3Service;
 
@@ -42,6 +44,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	@Autowired
 	private PostRepository postRepo;
+	
+	@Autowired
+	private WithdrewAccountRepository withdrewRepo;
 	
 	private final S3Service s3Service;
 	
@@ -66,11 +71,6 @@ public class JwtUserDetailsService implements UserDetailsService {
 				.nickname(infoDto.getNickname()).build()).getId();
 		
 		return accountId;
-	}
-
-	// 닉네임 중복 확인 -> 사용 X
-	public Boolean isExistNickname(String nickname) {
-		return accountRepository.existsByNickname(nickname);
 	}
 	
 	// 사용자의 id로 사용자 정보 가져오기
@@ -195,6 +195,22 @@ public class JwtUserDetailsService implements UserDetailsService {
 	public void modifyRegistrationToken(String token, Account account) {
 		account.setRegistrationToken(token);
 		accountRepository.save(account);
+	}
+	
+	@Transactional
+	public void deletedSave(String socialId, String type) {
+		int delete = accountRepository.deleteBySocialIdAndType(socialId, type);
+		
+		if (delete == 1) {
+			withdrewRepo.save(WithdrewAccount.builder().socialId(socialId).type(type).build());
+		}
+		
+		return;
+	}
+	
+	// 닉네임 중복 확인 -> 사용 X
+	public Boolean isExistNickname(String nickname) {
+		return accountRepository.existsByNickname(nickname);
 	}
 
 }

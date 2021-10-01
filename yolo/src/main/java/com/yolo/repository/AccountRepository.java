@@ -17,4 +17,7 @@ public interface AccountRepository  extends JpaRepository<Account, Long> {
 	
 	// 닉네임 중복 확인
 	Boolean existsByNickname(String nickname);
+	
+	// 회원정보 삭제
+	int deleteBySocialIdAndType(String socialId, String type);
 }
