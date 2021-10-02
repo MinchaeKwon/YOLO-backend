@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.xml.sax.SAXException;
 
@@ -27,12 +28,34 @@ public class TravelController {
 	@Autowired
 	TravelService travelService;
 	
-	// 날짜 받아서 api에서 받아온 데이터와 혼잡도 데이터 합쳐서 전달하는 api
+	// 날짜별 여행지 가져오기 -> 지역기반관광지 api에서 받아온 데이터와 혼잡도 데이터 합쳐서 전달
 	@GetMapping(value = "/travel")
-	public ResponseEntity<?> getTravelInfo(String date) throws IOException, SAXException, ParserConfigurationException {
+	public ResponseEntity<?> getDateTravelInfo(String date, @RequestParam(value="contentTypeId", required=false) int contentTypeId, 
+			@RequestParam("page") int page, @RequestParam("sort") String sort) 
+					throws IOException, SAXException, ParserConfigurationException {
 		
 		
-		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getAreaTourInfo()));
+		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getDateTourInfo(date, contentTypeId, page, sort)));
+	}
+	
+	// 지역별 여행지 가져오기 -> 혼잡도 데이터 합쳐서 전달
+	@GetMapping(value = "/travel")
+	public ResponseEntity<?> getAreaTravelInfo(@RequestParam("areaCode") int areaCode, 
+			@RequestParam(value="contentTypeId", required=false) int contentTypeId, 
+			@RequestParam("page") int page, @RequestParam("sort") String sort) 
+					throws IOException, SAXException, ParserConfigurationException {
+		
+		
+		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getAreaTourInfo(areaCode, contentTypeId, page, sort)));
+	}
+	
+	// 관광지 상세정보 가져오기
+	@GetMapping(value = "/travel")
+	public ResponseEntity<?> getDetailInfo(@RequestParam("contentId") int contentId, @RequestParam("contentTypeId") int contentTypeId) 
+			throws IOException, SAXException, ParserConfigurationException {
+		
+		
+		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getDetail(contentId, contentTypeId)));
 	}
 	
 	// 매거진 정보 가져오기

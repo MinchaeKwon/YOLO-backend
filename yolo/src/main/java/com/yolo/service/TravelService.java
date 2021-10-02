@@ -54,30 +54,25 @@ public class TravelService {
 	// open api 이용해서 관광 데이터 가져오기
 	// contenttypeid, addr1, addr2, firstimage1, firstimage2, title
 
-	public String getAreaTourInfo() throws IOException, SAXException, ParserConfigurationException {
+	// 날짜별 여행지 가져오기
+	public String getDateTourInfo(String date, int contentTypeId, int page, String sort) throws IOException, SAXException, ParserConfigurationException {
 		StringBuilder urlBuilder = new StringBuilder(
 				"http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList"); /* URL */
 		urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "="
 				+ URLEncoder.encode(
 						"8j34mk+s1/ndx0AkafC8kxGknHpk3HTehopMk9PIig4trbdhrG6PslyubpYwy4UWaU0GpUrcAwAvDsVWJkLi8g==",
 						"UTF-8")); /* 공공데이터포털에서 발급받은 인증키 */
-//		urlBuilder.append(
-//				"&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /* 현재 페이지 번호 */
 		urlBuilder.append(
-				"&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("100", "UTF-8")); /* 한 페이지 결과 수 */
+				"&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(page), "UTF-8")); /* 현재 페이지 번호 */
+//		urlBuilder.append(
+//				"&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("100", "UTF-8")); /* 한 페이지 결과 수 */
 		urlBuilder.append("&" + URLEncoder.encode("MobileApp", "UTF-8") + "="
 				+ URLEncoder.encode("YOLO", "UTF-8")); /* 서비스명=어플명 */
 		urlBuilder.append("&" + URLEncoder.encode("MobileOS", "UTF-8") + "="
 				+ URLEncoder.encode("AND", "UTF-8")); /* IOS (아이폰), AND (안드로이드),WIN (원도우폰), ETC */
-//	        urlBuilder.append("&" + URLEncoder.encode("arrange","UTF-8") + "=" + URLEncoder.encode("A", "UTF-8")); /*(A=제목순, B=조회순, C=수정일순, D=생성일순) , 대표이미지가 반드시 있는 정렬 (O=제목순, P=조회순, Q=수정일순, R=생성일순)*/
-//	        urlBuilder.append("&" + URLEncoder.encode("cat1","UTF-8") + "=" + URLEncoder.encode("", "UTF-8")); /*대분류 코드*/
+	        urlBuilder.append("&" + URLEncoder.encode("arrange","UTF-8") + "=" + URLEncoder.encode(sort, "UTF-8")); /*(A=제목순, B=조회순, C=수정일순, D=생성일순) , 대표이미지가 반드시 있는 정렬 (O=제목순, P=조회순, Q=수정일순, R=생성일순)*/
 //	        urlBuilder.append("&" + URLEncoder.encode("contentTypeId","UTF-8") + "=" + URLEncoder.encode("15", "UTF-8")); /*관광타입(관광지, 숙박 등) ID*/
-//	        urlBuilder.append("&" + URLEncoder.encode("areaCode","UTF-8") + "=" + URLEncoder.encode("4", "UTF-8")); /*지역코드*/
-//	        urlBuilder.append("&" + URLEncoder.encode("sigunguCode","UTF-8") + "=" + URLEncoder.encode("4", "UTF-8")); /*시군구코드(areaCode 필수)*/
-//	        urlBuilder.append("&" + URLEncoder.encode("cat2","UTF-8") + "=" + URLEncoder.encode("", "UTF-8")); /*중분류 코드(cat1필수)*/
-//	        urlBuilder.append("&" + URLEncoder.encode("cat3","UTF-8") + "=" + URLEncoder.encode("", "UTF-8")); /*소분류 코드(cat1,cat2필수)*/
 //	        urlBuilder.append("&" + URLEncoder.encode("listYN","UTF-8") + "=" + URLEncoder.encode("Y", "UTF-8")); /*목록 구분 (Y=목록, N=개수)*/
-//	        urlBuilder.append("&" + URLEncoder.encode("modifiedtime","UTF-8") + "=" + URLEncoder.encode("", "UTF-8")); /*콘텐츠 수정일*/
 
 		Document documentInfo = null;
 		documentInfo = (Document) DocumentBuilderFactory.newInstance().newDocumentBuilder()
@@ -111,6 +106,68 @@ public class TravelService {
 		}
 
 		return test(urlBuilder.toString());
+	}
+	
+	// 지역별 여행지 가져오기
+	public String getAreaTourInfo(int areaCode, int contentTypeId, int page, String sort) throws IOException, SAXException, ParserConfigurationException {
+		StringBuilder urlBuilder = new StringBuilder(
+				"http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList"); /* URL */
+		urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "="
+				+ URLEncoder.encode(
+						"8j34mk+s1/ndx0AkafC8kxGknHpk3HTehopMk9PIig4trbdhrG6PslyubpYwy4UWaU0GpUrcAwAvDsVWJkLi8g==",
+						"UTF-8")); /* 공공데이터포털에서 발급받은 인증키 */
+		urlBuilder.append(
+				"&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(page), "UTF-8")); /* 현재 페이지 번호 */
+//		urlBuilder.append(
+//				"&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("100", "UTF-8")); /* 한 페이지 결과 수 */
+		urlBuilder.append("&" + URLEncoder.encode("MobileApp", "UTF-8") + "="
+				+ URLEncoder.encode("YOLO", "UTF-8")); /* 서비스명=어플명 */
+		urlBuilder.append("&" + URLEncoder.encode("MobileOS", "UTF-8") + "="
+				+ URLEncoder.encode("AND", "UTF-8")); /* IOS (아이폰), AND (안드로이드),WIN (원도우폰), ETC */
+	        urlBuilder.append("&" + URLEncoder.encode("arrange","UTF-8") + "=" + URLEncoder.encode(sort, "UTF-8")); /*(A=제목순, B=조회순, C=수정일순, D=생성일순) , 대표이미지가 반드시 있는 정렬 (O=제목순, P=조회순, Q=수정일순, R=생성일순)*/
+//	        urlBuilder.append("&" + URLEncoder.encode("contentTypeId","UTF-8") + "=" + URLEncoder.encode("15", "UTF-8")); /*관광타입(관광지, 숙박 등) ID*/
+	        urlBuilder.append("&" + URLEncoder.encode("areaCode","UTF-8") + "=" + URLEncoder.encode(String.valueOf(areaCode), "UTF-8")); /*지역코드*/
+//	        urlBuilder.append("&" + URLEncoder.encode("listYN","UTF-8") + "=" + URLEncoder.encode("Y", "UTF-8")); /*목록 구분 (Y=목록, N=개수)*/
+
+		Document documentInfo = null;
+		documentInfo = (Document) DocumentBuilderFactory.newInstance().newDocumentBuilder()
+				.parse(urlBuilder.toString());
+		documentInfo.getDocumentElement().normalize();
+
+		Element root = documentInfo.getDocumentElement();
+		NodeList nList = root.getElementsByTagName("items").item(0).getChildNodes();
+		System.out.println(nList.getLength());
+
+		List<Map<String, String>> list = new ArrayList<>();
+
+		for (int i = 0; i < nList.getLength(); i++) {
+			Map<String, String> map = new HashMap<>();
+			
+			Node nNode = nList.item(i);
+			Element eElement = (Element) nNode;
+
+			map.put("addr1", getTagValue("addr1", eElement));
+			map.put("addr2", getTagValue("addr2", eElement));
+			map.put("contentId", getTagValue("contentid", eElement));
+			map.put("contenttypeId", getTagValue("contenttypeid", eElement));
+			map.put("imageUrl", getTagValue("firstimage", eElement));
+			map.put("thumbnaiUrl", getTagValue("firstimage2", eElement));
+			map.put("mapX", getTagValue("mapx", eElement));
+			map.put("mapY", getTagValue("mapy", eElement));
+			map.put("phone", getTagValue("tel", eElement));
+			map.put("title", getTagValue("title", eElement));
+
+			list.add(map);
+		}
+
+		return test(urlBuilder.toString());
+	}
+	
+	// 관광지 상세정보 가져오기 -> 소개/반복/이미지정보/공통정보조회 api 호출 (총 4개)
+	public String getDetail(int contentId, int contentTypeId) {
+		
+		
+		return null;
 	}
 
 	// tag값 정보를 가져오는 메소드
