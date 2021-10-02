@@ -7,5 +7,5 @@ import com.yolo.entity.WithdrewAccount;
 
 @Repository
 public interface WithdrewAccountRepository extends JpaRepository<WithdrewAccount, Long> {
-	boolean existsByUserEmailAndLoginType(String email, String loginType);
+	boolean existsBySocialIdAndType(String socialId, String type);
 }

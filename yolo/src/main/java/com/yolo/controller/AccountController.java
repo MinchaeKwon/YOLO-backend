@@ -175,6 +175,7 @@ public class AccountController {
 		return ResponseEntity.ok().body(new Response(str + " 성공", 200));
 	}
 	
+	// 회원 탈퇴
 	@DeleteMapping("/account/withdraw")
 	public ResponseEntity<?> withDrawAccount(@AuthenticationPrincipal Account account) {
 		try {
@@ -187,7 +188,7 @@ public class AccountController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("탈퇴 처리 실패", 500));
 		}
 		
-		return ResponseEntity.ok().body(new Response("success", 200));
+		return ResponseEntity.ok().body(new Response("탈퇴 성공", 200));
 	}
 
 	// 닉네임 중복 확인 -> 사용 X

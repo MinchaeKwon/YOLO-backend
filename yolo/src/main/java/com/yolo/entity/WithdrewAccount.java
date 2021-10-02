@@ -5,7 +5,7 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="withdrew_account", uniqueConstraints={@UniqueConstraint(columnNames={"socialId", "type"})})
+@Table(name="withdrew_account")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor

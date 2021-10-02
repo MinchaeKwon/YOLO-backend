@@ -197,11 +197,14 @@ public class JwtUserDetailsService implements UserDetailsService {
 		accountRepository.save(account);
 	}
 	
+	// 회원 탈퇴
 	@Transactional
 	public void deletedSave(String socialId, String type) {
+		// 회원 테이블에서 회원 정보 삭제
 		int delete = accountRepository.deleteBySocialIdAndType(socialId, type);
 		
 		if (delete == 1) {
+			// 탈퇴 회원 테이블에 저장
 			withdrewRepo.save(WithdrewAccount.builder().socialId(socialId).type(type).build());
 		}
 		
