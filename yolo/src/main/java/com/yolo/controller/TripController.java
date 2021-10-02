@@ -17,40 +17,40 @@ import com.yolo.dto.MagazineDto;
 import com.yolo.response.ErrorResponse;
 import com.yolo.response.MagazineRespone;
 import com.yolo.response.SuccessResponse;
-import com.yolo.service.TravelService;
+import com.yolo.service.TripService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class TravelController {
+public class TripController {
 	
 	@Autowired
-	TravelService travelService;
+	TripService travelService;
 	
 	// 날짜별 여행지 가져오기 -> 지역기반관광지 api에서 받아온 데이터와 혼잡도 데이터 합쳐서 전달
-	@GetMapping(value = "/travel")
-	public ResponseEntity<?> getDateTravelInfo(String date, @RequestParam(value="contentTypeId", required=false) int contentTypeId, 
+	@GetMapping(value = "/trip/date")
+	public ResponseEntity<?> getDateTripInfo(String date, @RequestParam(value="contentTypeId", required=false) int contentTypeId, 
 			@RequestParam("page") int page, @RequestParam("sort") String sort) 
 					throws IOException, SAXException, ParserConfigurationException {
 		
 		
-		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getDateTourInfo(date, contentTypeId, page, sort)));
+		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getDateTripInfo(date, contentTypeId, page, sort)));
 	}
 	
 	// 지역별 여행지 가져오기 -> 혼잡도 데이터 합쳐서 전달
-	@GetMapping(value = "/travel")
-	public ResponseEntity<?> getAreaTravelInfo(@RequestParam("areaCode") int areaCode, 
+	@GetMapping(value = "/trip/area")
+	public ResponseEntity<?> getAreaTripInfo(@RequestParam("areaCode") int areaCode, 
 			@RequestParam(value="contentTypeId", required=false) int contentTypeId, 
 			@RequestParam("page") int page, @RequestParam("sort") String sort) 
 					throws IOException, SAXException, ParserConfigurationException {
 		
 		
-		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getAreaTourInfo(areaCode, contentTypeId, page, sort)));
+		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getAreaTripInfo(areaCode, contentTypeId, page, sort)));
 	}
 	
 	// 관광지 상세정보 가져오기
-	@GetMapping(value = "/travel")
+	@GetMapping(value = "/trip/detail")
 	public ResponseEntity<?> getDetailInfo(@RequestParam("contentId") int contentId, @RequestParam("contentTypeId") int contentTypeId) 
 			throws IOException, SAXException, ParserConfigurationException {
 		

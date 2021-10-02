@@ -25,16 +25,16 @@ import org.xml.sax.SAXException;
 import com.yolo.dto.MagazineDto;
 import com.yolo.entity.Magazine;
 import com.yolo.repository.MagazineRepository;
-import com.yolo.repository.TravelRepository;
+import com.yolo.repository.CongestionRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TravelService {
+public class TripService {
 
 	@Autowired
-	TravelRepository travelRepo;
+	CongestionRepository congestionRepo;
 	
 	@Autowired
 	MagazineRepository magazineRepo;
@@ -55,7 +55,7 @@ public class TravelService {
 	// contenttypeid, addr1, addr2, firstimage1, firstimage2, title
 
 	// 날짜별 여행지 가져오기
-	public String getDateTourInfo(String date, int contentTypeId, int page, String sort) throws IOException, SAXException, ParserConfigurationException {
+	public String getDateTripInfo(String date, int contentTypeId, int page, String sort) throws IOException, SAXException, ParserConfigurationException {
 		StringBuilder urlBuilder = new StringBuilder(
 				"http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList"); /* URL */
 		urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "="
@@ -109,7 +109,7 @@ public class TravelService {
 	}
 	
 	// 지역별 여행지 가져오기
-	public String getAreaTourInfo(int areaCode, int contentTypeId, int page, String sort) throws IOException, SAXException, ParserConfigurationException {
+	public String getAreaTripInfo(int areaCode, int contentTypeId, int page, String sort) throws IOException, SAXException, ParserConfigurationException {
 		StringBuilder urlBuilder = new StringBuilder(
 				"http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList"); /* URL */
 		urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "="
