@@ -22,6 +22,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.yolo.dto.MagazineDto;
+import com.yolo.entity.Magazine;
+import com.yolo.repository.MagazineRepository;
 import com.yolo.repository.TravelRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +35,22 @@ public class TravelService {
 
 	@Autowired
 	TravelRepository travelRepo;
+	
+	@Autowired
+	MagazineRepository magazineRepo;
 
+	// 탭2 관련 정보 가져오기
+	public List<MagazineDto> getMagazine() {
+		List<Magazine> magazineList = magazineRepo.findAll();
+		List<MagazineDto> result = new ArrayList<>();
+		
+		for (Magazine m : magazineList) {
+			result.add(new MagazineDto(m.getLink(), m.getThumbnail()));
+		}
+		
+		return result;
+	}
+	
 	// open api 이용해서 관광 데이터 가져오기
 	// contenttypeid, addr1, addr2, firstimage1, firstimage2, title
 
