@@ -28,9 +28,9 @@ public class TripController {
 	@Autowired
 	TripService travelService;
 	
-	// 날짜별 여행지 가져오기 -> 지역기반관광지 api에서 받아온 데이터와 혼잡도 데이터 합쳐서 전달
-	@GetMapping(value = "/trip/date")
-	public ResponseEntity<?> getDateTripInfo(String date, @RequestParam(value="contentTypeId", required=false) int contentTypeId, 
+	// 날짜별 여행지 가져오기 -> 지역기반관광정보 api에서 받아온 데이터와 혼잡도 데이터 합쳐서 전달
+	@GetMapping(value = "/trip")
+	public ResponseEntity<?> getDateTripInfo(String date, @RequestParam(value="contentTypeId", required=false) Long contentTypeId, 
 			@RequestParam("page") int page, @RequestParam("sort") String sort) 
 					throws IOException, SAXException, ParserConfigurationException {
 		
@@ -38,20 +38,9 @@ public class TripController {
 		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getDateTripInfo(date, contentTypeId, page, sort)));
 	}
 	
-	// 지역별 여행지 가져오기 -> 혼잡도 데이터 합쳐서 전달
-	@GetMapping(value = "/trip/area")
-	public ResponseEntity<?> getAreaTripInfo(@RequestParam("areaCode") int areaCode, 
-			@RequestParam(value="contentTypeId", required=false) int contentTypeId, 
-			@RequestParam("page") int page, @RequestParam("sort") String sort) 
-					throws IOException, SAXException, ParserConfigurationException {
-		
-		
-		return ResponseEntity.ok().body(new SuccessResponse<String>(200, travelService.getAreaTripInfo(areaCode, contentTypeId, page, sort)));
-	}
-	
 	// 관광지 상세정보 가져오기
 	@GetMapping(value = "/trip/detail")
-	public ResponseEntity<?> getDetailInfo(@RequestParam("contentId") int contentId, @RequestParam("contentTypeId") int contentTypeId) 
+	public ResponseEntity<?> getDetailInfo(@RequestParam("contentId") Long contentId, @RequestParam("contentTypeId") Long contentTypeId) 
 			throws IOException, SAXException, ParserConfigurationException {
 		
 		
