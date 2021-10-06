@@ -163,8 +163,8 @@ public class TripService {
 		// 줄바꿈 제거
 		tripDetail.setOverview(getTagValue("overview", eElement).replaceAll("\n", ""));
 		
-		tripDetail.setLatitude(Double.parseDouble(getTagValue("mapx", eElement)));
-		tripDetail.setLongitude(Double.parseDouble(getTagValue("mapy", eElement)));
+		tripDetail.setLatitude(Double.parseDouble(getTagValue("mapy", eElement)));
+		tripDetail.setLongitude(Double.parseDouble(getTagValue("mapx", eElement)));
 		
 		detailImageUrl.add(getTagValue("firstimage", eElement));
 	}
