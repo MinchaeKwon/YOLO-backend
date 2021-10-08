@@ -146,7 +146,7 @@ public class AccountController {
 			postList = userDetailService.getMyPost(account, page);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미지 삭제 실패", 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("게시글 목록 가져오기 실패", 500));
 		}
 
 		return ResponseEntity.ok().body(new SuccessListResponse<List<PostDto.My>>(200, postList.size(), postList));

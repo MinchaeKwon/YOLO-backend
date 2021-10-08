@@ -51,7 +51,7 @@ public class PostService {
 	// 게시글 작성하기
 	@Transactional
 	public Long savePost(PostDto info, Account account) throws IOException {
-		Post post = postRepo.save(Post.builder().content(info.getContent())
+		Post post = postRepo.save(Post.builder().content(info.getContent()).placeName(info.getPlaceName())
 				.latitude(info.getLatitude()).longitude(info.getLongitude()).account(account).build());
 		
 		// 이미지 S3에 업로드 후 image 테이블에 url 저장
@@ -115,7 +115,7 @@ public class PostService {
 				String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 				
 				result.add(new PostDto.Detail(post.getId(), post_account.getNickname(), accountImageUrl, 
-						post.getContent(), postImage, post.getLatitude(), post.getLongitude(), 
+						post.getContent(), postImage, post.getPlaceName(), post.getLatitude(), post.getLongitude(), 
 						createAt, isAuthor, isLiked, cntOfRecommend, cntOfComment));
 			}	
 		}
@@ -162,7 +162,8 @@ public class PostService {
 				String createAt = post.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 
 				result.add(new PostDto.NotLogin(post.getId(), post_account.getNickname(), accountImageUrl,
-						post.getContent(), postImage, post.getLatitude(), post.getLongitude(), createAt, cntOfRecommend, cntOfComment));
+						post.getContent(), postImage, post.getPlaceName(), 
+						post.getLatitude(), post.getLongitude(), createAt, cntOfRecommend, cntOfComment));
 			}
 		}
 

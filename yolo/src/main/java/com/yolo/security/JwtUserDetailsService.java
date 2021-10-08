@@ -183,7 +183,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 			}
 			
 			result.add(new PostDto.My(post.getId(), post_account.getNickname(), accountImageUrl, 
-					post.getContent(), postImage, post.getLatitude(), post.getLongitude(), 
+					post.getContent(), postImage, post.getPlaceName(), post.getLatitude(), post.getLongitude(), 
 					createAt, cntOfRecommend, cntOfComment));
 		}
 		

@@ -24,6 +24,9 @@ public class Post {
 	@Column(name="content")
 	private String content;
 	
+	@Column(name="placeName")
+	private String placeName;
+	
 	@Column(name="latitude")
 	private double latitude;
 	
@@ -52,8 +55,9 @@ public class Post {
 	private List<Comment> comment;
 	
 	@Builder
-	public Post(String content, double latitude, double longitude , Account account) {
+	public Post(String content, String placeName, double latitude, double longitude , Account account) {
 		this.content = content;
+		this.placeName = placeName;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.account = account;

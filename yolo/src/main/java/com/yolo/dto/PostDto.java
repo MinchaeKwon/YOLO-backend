@@ -14,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostDto {
 	private String content;
+	private String placeName;
 	private double latitude;
 	private double longitude;
 	private List<MultipartFile> images;
@@ -27,6 +28,7 @@ public class PostDto {
 		private String authorImage;
 		private String content;
 		private List<String> imageUrl;
+		private String placeName;
 		private double latitude;
 		private double longitude;
 		private String createAt;
@@ -45,6 +47,7 @@ public class PostDto {
 		private String authorImage;
 		private String content;
 		private List<String> imageUrl;
+		private String placeName;
 		private double latitude;
 		private double longitude;
 		private String createAt;
@@ -61,6 +64,7 @@ public class PostDto {
 		private String authorImage;
 		private String content;
 		private List<String> imageUrl;
+		private String placeName;
 		private double latitude;
 		private double longitude;
 		private String createAt;
