@@ -18,11 +18,8 @@ public class Congestion {
 	@Column(name="contentId")
 	private int contentId;
 	
-	@Column(name="name")
-	private String name;
-	
-	@Column(name="predictNum")
-	private int predictNum;
+	@Column(name="date")
+	private String date;
 	
 	@Column(name="congestion")
 	private int congestion;
