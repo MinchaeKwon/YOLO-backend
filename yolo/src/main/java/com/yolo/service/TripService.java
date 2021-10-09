@@ -62,8 +62,7 @@ public class TripService {
 	}
 	
 	// 날짜별 여행지 가져오기
-	public List<TripDto> getDateTripInfo(int page, String sort, String date)
-			throws IOException, SAXException, ParserConfigurationException {
+	public List<TripDto> getDateTripInfo(int page, String sort, String date) {
 		
 		// 해당 페이지에 20개씩 혼잡도 파일 가져오고(sort -> 혼잡도 높은순, 낮은순), for문 돌리면서 관광지 정보 가져온 다음 TripDto에 넣기
 		
@@ -72,10 +71,10 @@ public class TripService {
 		
 		if (sort.equals("high")) {
 			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").descending());
-			conList = congestionRepo.findAll(pageable);
+			conList = congestionRepo.findByDate(pageable, date);
 		} else if (sort.equals("low")) {
 			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").ascending());
-			conList = congestionRepo.findAll(pageable);
+			conList = congestionRepo.findByDate(pageable, date);
 		}
 		
 		for (Congestion c : conList) {
@@ -84,7 +83,7 @@ public class TripService {
 			Tour tour = tourRepo.findByContentId(contentId).orElseThrow();
 			
 			result.add(new TripDto(tour.getContentId(), tour.getContentTypeId(), tour.getTitle(), tour.getAddress(), 
-					tour.getImageUrl(), tour.getThumbnail(), c.getCongestion()));
+					tour.getImageUrl(), tour.getThumbnail(), c.getCongestion() + 1));
 		}
 
 		return result;
