@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,8 +24,10 @@ import com.yolo.dto.MagazineDto;
 import com.yolo.dto.TripDto;
 import com.yolo.entity.Congestion;
 import com.yolo.entity.Magazine;
+import com.yolo.entity.Tour;
 import com.yolo.repository.CongestionRepository;
 import com.yolo.repository.MagazineRepository;
+import com.yolo.repository.TourRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,16 +37,15 @@ public class TripService {
 
 	@Autowired
 	CongestionRepository congestionRepo;
+	
+	@Autowired
+	TourRepository tourRepo;
 
 	@Autowired
 	MagazineRepository magazineRepo;
 	
-	private List<TripDto> tripList;
-	
 	private TripDto.Detail tripDetail;
 	private ArrayList<String> detailImageUrl;
-	
-	private int region_page;
 	
 	private int ELE_SIZE = 20;
 
@@ -59,86 +61,33 @@ public class TripService {
 		return result;
 	}
 	
-	public String getRegionTripInfo(int page, Long contentTypeId) 
-			throws IOException, SAXException, ParserConfigurationException {
-		StringBuilder urlBuilder = new StringBuilder(
-				"http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList"); /* URL */
-		urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "="
-				+ URLEncoder.encode(
-						"8j34mk+s1/ndx0AkafC8kxGknHpk3HTehopMk9PIig4trbdhrG6PslyubpYwy4UWaU0GpUrcAwAvDsVWJkLi8g==",
-						"UTF-8")); /* 공공데이터포털에서 발급받은 인증키 */
-		urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "="
-				+ URLEncoder.encode(String.valueOf(page), "UTF-8")); /* 현재 페이지 번호 */
-		urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "="
-				+ URLEncoder.encode("100", "UTF-8")); /* 한 페이지 결과 수 */
-		urlBuilder.append("&" + URLEncoder.encode("MobileApp", "UTF-8") + "="
-				+ URLEncoder.encode("YOLO", "UTF-8")); /* 서비스명=어플명 */
-		urlBuilder.append("&" + URLEncoder.encode("MobileOS", "UTF-8") + "="
-				+ URLEncoder.encode("AND", "UTF-8")); /* IOS (아이폰), AND (안드로이드),WIN (원도우폰), ETC */
-//	        urlBuilder.append("&" + URLEncoder.encode("arrange","UTF-8") + "=" + URLEncoder.encode(sort, "UTF-8")); /*(A=제목순, B=조회순, C=수정일순, D=생성일순) , 대표이미지가 반드시 있는 정렬 (O=제목순, P=조회순, Q=수정일순, R=생성일순)*/
-//	        urlBuilder.append("&" + URLEncoder.encode("contentTypeId","UTF-8") + "=" + URLEncoder.encode("15", "UTF-8")); /*관광타입(관광지, 숙박 등) ID*/
-//	        urlBuilder.append("&" + URLEncoder.encode("listYN","UTF-8") + "=" + URLEncoder.encode("Y", "UTF-8")); /*목록 구분 (Y=목록, N=개수)*/
-		
-		return urlBuilder.toString();
-	}
-	
 	// 날짜별 여행지 가져오기
-	public List<TripDto> getDateTripInfo(String date, Long contentTypeId, int page, String sort)
+	public List<TripDto> getDateTripInfo(int page, String sort, String date)
 			throws IOException, SAXException, ParserConfigurationException {
 		
-		// 해당 페이지에 20개씩 혼잡도 파일 가져오고(sort -> 혼잡도 높은순, 낮은순), for문으 돌리면서 관광지 정보 가져와서 TripDto에 넣기
+		// 해당 페이지에 20개씩 혼잡도 파일 가져오고(sort -> 혼잡도 높은순, 낮은순), for문 돌리면서 관광지 정보 가져온 다음 TripDto에 넣기
 		
-		System.out.println(page + ", " + sort);
-		
+		List<TripDto> result = new ArrayList<>();
 		Page<Congestion> conList = null;
 		
-		Pageable pageable = PageRequest.of(page - 1, ELE_SIZE);
 		if (sort.equals("high")) {
-			conList = congestionRepo.findByDaeOrderByCongestionDesc(date, pageable);
-		} else if (sort.endsWith("low")) {
-			conList = congestionRepo.findByDaeOrderByCongestionAsc(date, pageable);
+			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").descending());
+			conList = congestionRepo.findAll(pageable);
+		} else if (sort.equals("low")) {
+			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").ascending());
+			conList = congestionRepo.findAll(pageable);
 		}
 		
-		while (tripList.size() >= 20) {
-			String url = getRegionTripInfo(region_page, contentTypeId);
-
-			Document documentInfo = null;
-			documentInfo = (Document) DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.parse(url);
-			documentInfo.getDocumentElement().normalize();
-
-			Element root = documentInfo.getDocumentElement();
-			NodeList nList = root.getElementsByTagName("items").item(0).getChildNodes();
-			System.out.println(nList.getLength());
-
-			tripList = new ArrayList<>();
+		for (Congestion c : conList) {
+			int contentId = c.getContentId();
 			
-			for (int i = 0; i < nList.getLength(); i++) {
-				Node nNode = nList.item(i);
-				Element eElement = (Element) nNode;
-				
-				Long contentId = Long.parseLong(getTagValue("contentid", eElement));
-				
-				
-				
-				TripDto trip = new TripDto();
-				
-				trip.setContentId(contentId);
-				trip.setContentId(contentTypeId);
-				trip.setAddress(getTagValue("addr1", eElement));
-				trip.setTitle(getTagValue("title", eElement));
-				trip.setImageUrl(getTagValue("firstimage", eElement));
-				trip.setTumbnailUrl(getTagValue("firstimage2", eElement));
-
-				if (tripList.size() < 20) {
-					tripList.add(trip);	
-				}
-			}
+			Tour tour = tourRepo.findByContentId(contentId).orElseThrow();
 			
-			region_page++;
+			result.add(new TripDto(tour.getContentId(), tour.getContentTypeId(), tour.getTitle(), tour.getAddress(), 
+					tour.getImageUrl(), tour.getThumbnail(), c.getCongestion()));
 		}
 
-		return tripList;
+		return result;
 	}
 
 	// 관광지 상세정보 가져오기 -> 소개/이미지정보/공통정보조회 api 호출 (총 3개)

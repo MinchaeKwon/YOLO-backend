@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TripDto {
-	private Long contentId;
-	private Long conteTypeId;
+	private int contentId;
+	private int conteTypeId;
 	private String title;
 	private String address;
 	private String imageUrl;
