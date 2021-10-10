@@ -272,11 +272,7 @@ public class TripService {
 	private static String getTagValue(String tag, Element eElement) {
 		Node nValue = null;
 
-		try {
-			nValue = eElement.getElementsByTagName(tag).item(0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		nValue = eElement.getElementsByTagName(tag).item(0);
 
 		if (nValue == null) {
 			return null;
