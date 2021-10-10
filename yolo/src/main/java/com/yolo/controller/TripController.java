@@ -29,12 +29,12 @@ public class TripController {
 	// 날짜별 여행지 가져오기 -> 지역기반관광정보 api에서 받아온 데이터와 혼잡도 데이터 합쳐서 전달
 	@GetMapping(value = "/trip")
 	public ResponseEntity<?> getDateTripInfo(@RequestParam("page") int page, @RequestParam("sort") String sort,
-			@RequestParam("date")String date) {
+			@RequestParam("date")String date, @RequestParam(value="contentTypeId", required=false) Long contentTypeId) {
 		
 		List<TripDto> result = null;
 		
 		try {
-			result = travelService.getDateTripInfo(page, sort, date);
+			result = travelService.getDateTripInfo(page, sort, date, contentTypeId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("관광지 목록 가져오기 실패", 500));

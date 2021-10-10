@@ -18,6 +18,9 @@ public class Congestion {
 	@Column(name="contentId")
 	private int contentId;
 	
+	@Column(name="contentTypeId")
+	private Long contentTypeId;
+	
 	@Column(name="date")
 	private String date;
 	

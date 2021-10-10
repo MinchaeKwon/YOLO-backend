@@ -11,4 +11,7 @@ import com.yolo.entity.Congestion;
 public interface CongestionRepository extends JpaRepository<Congestion, Long> {
 	// 특정 날짜에 해당하는 관광지 가져오기
 	Page<Congestion> findByDate(Pageable pageable, String date);
+	
+	// 특정 날짜, contentTypeId에 해당하는 관광지 가져오기
+	Page<Congestion> findByDateAndContentTypeId(Pageable pageable, String date, Long contentTypeId);
 }

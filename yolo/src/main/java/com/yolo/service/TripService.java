@@ -62,7 +62,7 @@ public class TripService {
 	}
 	
 	// 날짜별 여행지 가져오기
-	public List<TripDto> getDateTripInfo(int page, String sort, String date) {
+	public List<TripDto> getDateTripInfo(int page, String sort, String date, Long contentTypeId) {
 		
 		// 해당 페이지에 20개씩 혼잡도 파일 가져오고(sort -> 혼잡도 높은순, 낮은순), for문 돌리면서 관광지 정보 가져온 다음 TripDto에 넣기
 		
@@ -70,11 +70,21 @@ public class TripService {
 		Page<Congestion> conList = null;
 		
 		if (sort.equals("high")) {
-			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").descending());
-			conList = congestionRepo.findByDate(pageable, date);
+			if (contentTypeId == null) {
+				Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").descending());
+				conList = congestionRepo.findByDate(pageable, date);
+			} else {
+				Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").descending());
+				conList = congestionRepo.findByDateAndContentTypeId(pageable, date, contentTypeId);
+			}
 		} else if (sort.equals("low")) {
-			Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").ascending());
-			conList = congestionRepo.findByDate(pageable, date);
+			if (contentTypeId == null) {
+				Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").ascending());
+				conList = congestionRepo.findByDate(pageable, date);
+			} else {
+				Pageable pageable = PageRequest.of(page - 1, ELE_SIZE, Sort.by("congestion").ascending());
+				conList = congestionRepo.findByDateAndContentTypeId(pageable, date, contentTypeId);
+			}
 		}
 		
 		for (Congestion c : conList) {
