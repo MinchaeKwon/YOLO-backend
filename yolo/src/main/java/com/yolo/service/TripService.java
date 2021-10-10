@@ -140,7 +140,6 @@ public class TripService {
 		
 		Element root = documentInfo.getDocumentElement();
 		NodeList nList = root.getElementsByTagName("items").item(0).getChildNodes();
-		System.out.println(nList.getLength());
 
 		Node nNode = nList.item(0);
 		Element eElement = (Element) nNode;
@@ -151,12 +150,26 @@ public class TripService {
 		tripDetail.setTitle(getTagValue("title", eElement));
 		
 		// html 코드 제거
-		tripDetail.setHomepage(getTagValue("homepage", eElement).replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
-		tripDetail.setTel(getTagValue("tel", eElement));
-		tripDetail.setAddress(getTagValue("addr1", eElement));
+		String homepage = getTagValue("homepage", eElement);
+		if (homepage != null) {
+			tripDetail.setHomepage(homepage.replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));	
+		}
+		
+		String tel = getTagValue("tel", eElement);
+		if (tel != null) {
+			tripDetail.setTel(tel);
+		}
+		
+		String address = getTagValue("addr1", eElement);
+		if (address != null) {
+			tripDetail.setAddress(address);	
+		}
 		
 		// 줄바꿈 제거
-		tripDetail.setOverview(getTagValue("overview", eElement).replaceAll("\n", ""));
+		String overview = getTagValue("overview", eElement);
+		if (overview != null) {
+			tripDetail.setOverview(overview.replaceAll("\n", ""));	
+		}
 		
 		String latitude = getTagValue("mapy", eElement);
 		if (latitude != null) {
@@ -168,7 +181,10 @@ public class TripService {
 			tripDetail.setLongitude(Double.parseDouble(longitude));
 		}
 		
-		detailImageUrl.add(getTagValue("firstimage", eElement));
+		String imageUrl = getTagValue("firstimage", eElement);
+		if (imageUrl != null) {
+			detailImageUrl.add(imageUrl);	
+		}
 	}
 
 	// 소개정보 api 호출
@@ -198,9 +214,20 @@ public class TripService {
 		Node nNode = nList.item(0);
 		Element eElement = (Element) nNode;
 
-		tripDetail.setParking(getTagValue("parking", eElement));
-		tripDetail.setRestdate(getTagValue("restdate", eElement));
-		tripDetail.setUsetime(getTagValue("usetime", eElement));
+		String parking = getTagValue("parking", eElement);
+		if (parking != null) {
+			tripDetail.setParking(parking);
+		}
+		
+		String restdate = getTagValue("restdate", eElement);
+		if (restdate != null) {
+			tripDetail.setRestdate(restdate);
+		}
+		
+		String usetime = getTagValue("usetime", eElement);
+		if (usetime != null) {
+			tripDetail.setUsetime(usetime);	
+		}
 	}
 
 	// 이미지정보 api 호출
@@ -232,7 +259,10 @@ public class TripService {
 			Node nNode = nList.item(i);
 			Element eElement = (Element) nNode;
 
-			detailImageUrl.add(getTagValue("originimgurl", eElement));
+			String imageUrl = getTagValue("originimgurl", eElement);
+			if (imageUrl != null) {
+				detailImageUrl.add(imageUrl);
+			}
 		}
 		
 		tripDetail.setImageUrl(detailImageUrl);
