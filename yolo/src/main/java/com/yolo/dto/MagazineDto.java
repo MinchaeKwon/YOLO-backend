@@ -9,6 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MagazineDto {
-	String link;
-	String tumbnail;
+	private String link;
+	private String tumbnail;
 }

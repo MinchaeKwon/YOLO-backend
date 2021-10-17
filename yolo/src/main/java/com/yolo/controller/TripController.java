@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.yolo.dto.MagazineDto;
 import com.yolo.dto.TripDto;
 import com.yolo.response.ErrorResponse;
-import com.yolo.response.MagazineRespone;
 import com.yolo.response.SuccessListResponse;
 import com.yolo.response.SuccessResponse;
 import com.yolo.service.TripService;
@@ -56,21 +54,6 @@ public class TripController {
 		}
 		
 		return ResponseEntity.ok().body(new SuccessResponse<TripDto.Detail>(200, result));
-	}
-	
-	// 매거진 정보 가져오기
-	@GetMapping(value = "/magazine")
-	public ResponseEntity<?> getMagazineInfo(String date) {
-		List<MagazineDto> result;
-		
-		try {
-			result = travelService.getMagazine();
-		} catch(Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("매거진 가져오기 실패", 500));
-		}
-		
-		return ResponseEntity.ok().body(new MagazineRespone<List<MagazineDto>>(200, "'9월호'", result));
 	}
 	
 }

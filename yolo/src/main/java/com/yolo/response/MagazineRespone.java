@@ -9,11 +9,13 @@ public class MagazineRespone<T> {
 	private int resultCode;
 	private String title;
 	private T magazine;
+	private boolean subscribe;
 	
-	public MagazineRespone(int resultCode, String title, T magazine) {
+	public MagazineRespone(int resultCode, String title, T magazine, boolean subscribe) {
 		this.message = "success";
 		this.resultCode = resultCode;
 		this.title = title;
 		this.magazine = magazine;
+		this.subscribe = subscribe;
 	}
 }

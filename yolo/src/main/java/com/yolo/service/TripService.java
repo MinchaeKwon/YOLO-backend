@@ -20,13 +20,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.yolo.dto.MagazineDto;
 import com.yolo.dto.TripDto;
 import com.yolo.entity.Congestion;
-import com.yolo.entity.Magazine;
 import com.yolo.entity.Tour;
 import com.yolo.repository.CongestionRepository;
-import com.yolo.repository.MagazineRepository;
 import com.yolo.repository.TourRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -40,26 +37,11 @@ public class TripService {
 	
 	@Autowired
 	TourRepository tourRepo;
-
-	@Autowired
-	MagazineRepository magazineRepo;
 	
 	private TripDto.Detail tripDetail;
 	private ArrayList<String> detailImageUrl;
 	
 	private int ELE_SIZE = 20;
-
-	// 탭2 관련 정보 가져오기
-	public List<MagazineDto> getMagazine() {
-		List<Magazine> magazineList = magazineRepo.findAll();
-		List<MagazineDto> result = new ArrayList<>();
-
-		for (Magazine m : magazineList) {
-			result.add(new MagazineDto(m.getLink(), m.getThumbnail()));
-		}
-
-		return result;
-	}
 	
 	// 날짜별 여행지 가져오기
 	public List<TripDto> getDateTripInfo(int page, String sort, String date, Long contentTypeId) {

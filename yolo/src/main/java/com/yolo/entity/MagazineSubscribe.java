@@ -5,23 +5,22 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="magazine")
+@Table(name="magazine_subscribe")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Magazine {
+public class MagazineSubscribe {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false)
 	private long id;
 	
-	@Column(name="link")
-	private String link;
+	@OneToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 	
-	@Column(name="thumbnail")
-	private String thumbnail;
-	
-	@Column(name="month")
-	private int month;
-	
+	@Builder
+	public MagazineSubscribe(Account account) {
+		this.account = account;
+	}
 }

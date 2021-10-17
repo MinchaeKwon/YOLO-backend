@@ -63,8 +63,11 @@ public class Account implements UserDetails {
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="account", orphanRemoval=true)
     private List<Liked> liked;
 	
-	@Column(name = "registrationToken")
+	@Column(name="registrationToken")
     private String registrationToken;
+	
+	@OneToOne(cascade = CascadeType.ALL, mappedBy="account", orphanRemoval=true)
+    private MagazineSubscribe subscribe;
 	
 	private boolean commentPush;
 	
