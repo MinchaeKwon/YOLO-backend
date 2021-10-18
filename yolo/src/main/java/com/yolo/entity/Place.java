@@ -29,15 +29,6 @@ public class Place {
 	@Column(name="imageUrl")
 	private String imageUrl;
 	
-	@Column(name="cityCode")
-	private int cityCode;
-	
-	@Column(name="provinceName")
-	private String provinceName;
-	
-	@Column(name="cityName")
-	private String cityName;
-	
 	@Column(name="date")
 	private String date;
 	
