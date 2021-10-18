@@ -62,7 +62,7 @@ public class EtcService {
 		List<NoticeDto> result = new ArrayList<>();
 		
 		for (Notice n : noticeList) {
-			result.add(new NoticeDto(n.getTitle(), n.getContent(), n.getDate()));
+			result.add(new NoticeDto(n.getId(), n.getTitle(), n.getContent(), n.getDate()));
 		}
 
 		return result;
