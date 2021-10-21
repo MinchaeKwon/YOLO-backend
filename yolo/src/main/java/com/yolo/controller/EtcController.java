@@ -68,7 +68,7 @@ public class EtcController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("매거진 가져오기 실패", 500));
 		}
 		
-		return ResponseEntity.ok().body(new MagazineRespone<List<MagazineDto>>(200, "'9월호'", result, subscribe));
+		return ResponseEntity.ok().body(new MagazineRespone<List<MagazineDto>>(200, "'10월호'", result, subscribe));
 	}
 	
 	// 매거진 구독하기
