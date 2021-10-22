@@ -30,7 +30,7 @@ public class FCMService {
     private static String getAccessToken() throws IOException {
         ClassPathResource resource = new ClassPathResource("firebase/yolo-10f40-firebase-adminsdk-phvq4-f383bb0ecb.json");
         GoogleCredential googleCredential = GoogleCredential
-                .fromStream(new FileInputStream(resource.getFile()))
+                .fromStream(resource.getInputStream())
                 .createScoped(Arrays.asList(SCOPES));
         googleCredential.refreshToken();
         return googleCredential.getAccessToken();
