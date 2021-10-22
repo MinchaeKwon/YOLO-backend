@@ -23,24 +23,18 @@ import okhttp3.Response;
 @Service
 @RequiredArgsConstructor
 public class FCMService {
-
-//	private static String getAccessToken() throws IOException {
-//        ClassPathResource resource = new ClassPathResource("firebase/firebase_service_key");
-//        GoogleCredential googleCredential = GoogleCredential
-//                .fromStream(new FileInputStream(resource.getFile()))
-//                .createScoped(Arrays.asList(SCOPES));
-//        googleCredential.refreshToken();
-//        return googleCredential.getAccessToken();
-//    }
 	
-//	private static String getAccessToken() throws IOException {
-//        ClassPathResource resource = new ClassPathResource("firebase/jackpot-1611239774705-firebase-adminsdk-xlp80-fa2c872b91.json");
-//        GoogleCredential googleCredential = GoogleCredential
-//                .fromStream(new FileInputStream(resource.getFile()))
-//                .createScoped(Arrays.asList(SCOPES));
-//        googleCredential.refreshToken();
-//        return googleCredential.getAccessToken();
-//    }
+	private static final String MESSAGING_SCOPE = "https://www.googleapis.com/auth/firebase.messaging";
+    private static final String[] SCOPES = { MESSAGING_SCOPE };
+    
+    private static String getAccessToken() throws IOException {
+        ClassPathResource resource = new ClassPathResource("firebase/yolo-10f40-firebase-adminsdk-phvq4-f383bb0ecb.json");
+        GoogleCredential googleCredential = GoogleCredential
+                .fromStream(new FileInputStream(resource.getFile()))
+                .createScoped(Arrays.asList(SCOPES));
+        googleCredential.refreshToken();
+        return googleCredential.getAccessToken();
+    }
 	
 	public String sendCommentToToken(String registrationToken) throws FirebaseMessagingException {
 		Message message = Message.builder()
@@ -72,21 +66,22 @@ public class FCMService {
         // 2. create token & send push
         try {
             OkHttpClient okHttpClient = new OkHttpClient();
+            
             Request request = new Request.Builder()
-                    .addHeader("Authorization", "Bearer " + "AAAAsiEk5eQ:APA91bESl8-TwBWCSm7Zz6AkVaZwwIfSrRkfBoDeWdt9FkbFhWESKcqP9f-3cuvLVRQ5aUmd5zLW6Wvf6lmM5pSWgVXLXanPVifOJ-I9LiVsAW2nHEveZLpDxsDP8uzY4wP3_w-E1Uy-")
+                    .addHeader("Authorization", "Bearer " + getAccessToken())
                     .addHeader("Content-Type", "application/json; UTF-8")
                     .url("https://fcm.googleapis.com/v1/projects/yolo-10f40/messages:send")
                     .post(RequestBody.create(jsonMessage.toString(), MediaType.parse("application/json")))
                     .build();
+            
             response = okHttpClient.newCall(request).execute();
 
+            System.out.println("### server key : " + getAccessToken());
             System.out.println("### response str : " + response.toString());
             System.out.println("### response result : " + response.isSuccessful());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        System.out.println("Successfully sent message: " + response.toString());
         
 		return response.toString();
 	}

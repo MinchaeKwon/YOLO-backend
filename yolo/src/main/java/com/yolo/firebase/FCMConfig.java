@@ -16,7 +16,7 @@ import com.google.firebase.FirebaseOptions;
 @Configuration
 public class FCMConfig {
 
-    @Value("classpath:firebase/firebase_service_key.json")
+    @Value("classpath:firebase/yolo-10f40-firebase-adminsdk-phvq4-f383bb0ecb.json")
     private Resource resource;
 
     @PostConstruct
@@ -36,6 +36,7 @@ public class FCMConfig {
         	             
         	} else {
         		FileInputStream serviceAccount = new FileInputStream(resource.getFile());
+        		
         	    FirebaseOptions options = new FirebaseOptions.Builder()
         	        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
 //        	        .setDatabaseUrl("https://{사용자마다 다름}.firebaseio.com")
