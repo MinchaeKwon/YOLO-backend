@@ -70,7 +70,7 @@ public class EtcService {
 	
 	// 탭2 관련 정보 가져오기 -> 매거진 정보
 	public List<MagazineDto> getMagazine(Account account) {
-		List<Magazine> magazineList = magazineRepo.findByMonth(9); // 9월호 매거진 가져오기
+		List<Magazine> magazineList = magazineRepo.findByMonth(10); // 10월호 매거진 가져오기
 		List<MagazineDto> result = new ArrayList<>();
 
 		for (Magazine m : magazineList) {
