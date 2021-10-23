@@ -24,34 +24,34 @@ public class FCMConfig {
         try {
             // Service Account를 이용하여 Fireabse Admin SDK 초기화
         	
-//        	FirebaseApp firebaseApp = null;
-//        	List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
-//        	 
-//        	if (firebaseApps != null && !firebaseApps.isEmpty()){
-//        	    for (FirebaseApp app : firebaseApps){
-//        	        if (app.getName().equals(FirebaseApp.DEFAULT_APP_NAME)) {
-//        	            firebaseApp = app;
-//        	        }
-//        	    }
-//        	             
-//        	} else {
-//        		FileInputStream serviceAccount = new FileInputStream(resource.getFile());
-//        		
-//        	    FirebaseOptions options = new FirebaseOptions.Builder()
-//        	        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-////        	        .setDatabaseUrl("https://{사용자마다 다름}.firebaseio.com")
-//        	        .build();
-//        	    
-//        	    firebaseApp = FirebaseApp.initializeApp(options);              
-//        	}
+        	FirebaseApp firebaseApp = null;
+        	List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
+        	 
+        	if (firebaseApps != null && !firebaseApps.isEmpty()){
+        	    for (FirebaseApp app : firebaseApps){
+        	        if (app.getName().equals(FirebaseApp.DEFAULT_APP_NAME)) {
+        	            firebaseApp = app;
+        	        }
+        	    }
+        	             
+        	} else {
+        		FileInputStream serviceAccount = (FileInputStream) resource.getInputStream();
+        		
+        	    FirebaseOptions options = new FirebaseOptions.Builder()
+        	        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+//        	        .setDatabaseUrl("https://{사용자마다 다름}.firebaseio.com")
+        	        .build();
+        	    
+        	    firebaseApp = FirebaseApp.initializeApp(options);              
+        	}
         	
-            FileInputStream serviceAccount = new FileInputStream(resource.getFile());
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-//                    .setDatabaseUrl("https://{사용자마다 다름}.firebaseio.com")
-                    .build();
-            
-            FirebaseApp.initializeApp(options);
+//            FileInputStream serviceAccount = new FileInputStream(resource.getFile());
+//            FirebaseOptions options = new FirebaseOptions.Builder()
+//                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+////                    .setDatabaseUrl("https://{사용자마다 다름}.firebaseio.com")
+//                    .build();
+//            
+//            FirebaseApp.initializeApp(options);
 
         } catch (Exception e) {
             e.printStackTrace();
