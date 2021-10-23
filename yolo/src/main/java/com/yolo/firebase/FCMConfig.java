@@ -35,7 +35,7 @@ public class FCMConfig {
         	    }
         	             
         	} else {
-        		FileInputStream serviceAccount = (FileInputStream) resource.getInputStream();
+        		FileInputStream serviceAccount = new FileInputStream(resource.getFile());
         		
         	    FirebaseOptions options = new FirebaseOptions.Builder()
         	        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
