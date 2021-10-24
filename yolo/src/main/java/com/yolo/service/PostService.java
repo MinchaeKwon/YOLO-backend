@@ -3,7 +3,9 @@ package com.yolo.service;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -208,19 +210,24 @@ public class PostService {
 	
 	// 게시글 좋아요
 	@Transactional
-	public boolean addLike(Long post_id, Account account) {
+	public Map<String, Object> addLike(Long post_id, Account account) {
+		Map<String, Object> result = new HashMap<>();
 		Post post = postRepo.findById(post_id).orElseThrow(EntityNotFoundException::new);
 
 		boolean isExist = likedRepo.existsByPostAndAccount(post, account);
 
 		if (isExist) {
-			return false;
+			result.put("liked", false);
+		} else {
+			result.put("liked", true);
 		}
 
 		Liked like = Liked.builder().post(post).account(account).build();
 		likedRepo.save(like);
 
-		return true;
+		result.put("postAccount", post.getAccount());
+		
+		return result;
 	}
 	
 	// 게시글 좋아요 취소

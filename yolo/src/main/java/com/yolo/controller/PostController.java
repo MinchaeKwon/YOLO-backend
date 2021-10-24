@@ -2,6 +2,7 @@ package com.yolo.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.yolo.dto.PostDto;
 import com.yolo.entity.Account;
+import com.yolo.firebase.FCMService;
 import com.yolo.response.ErrorResponse;
 import com.yolo.response.Response;
 import com.yolo.response.SuccessListResponse;
@@ -44,6 +46,9 @@ public class PostController {
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private FCMService fcmService;
 	
 	// 게시글 작성하기
 	@PostMapping(value = "/community")
@@ -136,10 +141,16 @@ public class PostController {
 	// 게시글 좋아요
 	@PostMapping("/community/like/{id}")
 	public ResponseEntity<?> addLiked(@PathVariable("id") Long id, @AuthenticationPrincipal Account account) {
-		boolean result;
+		Map<String, Object> result;
 
 		try {
 			result = postService.addLike(id, account);
+			Account postAccount = (Account) result.get("postAccount");
+			
+			// 게시글 작성자에게 좋아요 알림 보내기
+			if (postAccount.isPush()) {
+				fcmService.sendLikedPush(postAccount.getRegistrationToken(), account.getNickname());
+			}
 			
 		} catch (EntityNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("일치하는 게시글 정보가 없습니다.", 404));
@@ -147,8 +158,10 @@ public class PostController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("게시글 좋아요 도중 오류가 발생했습니다.", 500));
 		}
+		
+		boolean liked = (boolean) result.get("liked");
 
-		if (result) {
+		if (liked) {
 			return ResponseEntity.ok().body(new Response("게시글 좋아요 성공", 200));			
 		}
 

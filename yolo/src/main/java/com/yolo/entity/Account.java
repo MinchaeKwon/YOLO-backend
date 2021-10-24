@@ -69,7 +69,7 @@ public class Account implements UserDetails {
 	@OneToOne(cascade = CascadeType.ALL, mappedBy="account", orphanRemoval=true)
     private MagazineSubscribe subscribe;
 	
-	private boolean commentPush;
+	private boolean push;
 	
 	@Builder
 	public Account(String socialId, String type, String auth, String nickname) {
@@ -77,7 +77,7 @@ public class Account implements UserDetails {
 		this.type = type;
 		this.auth = auth;
 		this.nickname = nickname;
-		this.commentPush = true;
+		this.push = true;
 	}
 	
 	public void update(AccountUpdateDto infoDto) {

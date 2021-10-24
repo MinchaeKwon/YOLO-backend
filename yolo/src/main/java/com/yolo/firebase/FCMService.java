@@ -1,6 +1,5 @@
 package com.yolo.firebase;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -50,7 +49,8 @@ public class FCMService {
 		return response;
 	}
 	
-	public String sendCommentToToken2(String registrationToken) {
+	// 댓글 알림
+	public String sendCommentPush(String registrationToken) {
 		 // 1. create message body
         JSONObject jsonValue = new JSONObject();
         jsonValue.put("title", "게시글 댓글 알림");
@@ -86,6 +86,46 @@ public class FCMService {
             e.printStackTrace();
         }
         
+		return response.toString();
+	}
+	
+	// 좋아요 알림
+	public String sendLikedPush(String registrationToken, String nickname) {
+		 // 1. create message body
+       JSONObject jsonValue = new JSONObject();
+       jsonValue.put("title", "좋아요 알림");
+       jsonValue.put("content", nickname + "님이 회원님의 게시글을 좋아합니다.");
+
+       JSONObject jsonData = new JSONObject();
+       jsonData.put("token", registrationToken);
+       jsonData.put("data", jsonValue);
+
+       JSONObject jsonMessage = new JSONObject();
+       jsonMessage.put("message", jsonData);
+       
+       Response response = null;
+
+       // 2. create token & send push
+       try {
+           OkHttpClient okHttpClient = new OkHttpClient();
+           
+           System.out.println("### message : " + jsonMessage.toString());
+           
+           Request request = new Request.Builder()
+                   .addHeader("Authorization", "Bearer " + getAccessToken())
+                   .addHeader("Content-Type", "application/json; UTF-8")
+                   .url("https://fcm.googleapis.com/v1/projects/yolo-10f40/messages:send")
+                   .post(RequestBody.create(jsonMessage.toString(), MediaType.parse("application/json")))
+                   .build();
+           
+           response = okHttpClient.newCall(request).execute();
+
+           System.out.println("### response str : " + response.toString());
+           System.out.println("### response result : " + response.isSuccessful());
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+       
 		return response.toString();
 	}
 	

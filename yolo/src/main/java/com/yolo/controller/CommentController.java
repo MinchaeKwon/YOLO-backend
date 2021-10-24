@@ -65,8 +65,8 @@ public class CommentController {
 			post = (Post) result.get("post");
 			
 			// 게시글 작성자에게 푸시 알림 보내기
-			if(post.getAccount().isCommentPush()) {
-				fcmService.sendCommentToToken2(post.getAccount().getRegistrationToken());
+			if(post.getAccount().isPush()) {
+				fcmService.sendCommentPush(post.getAccount().getRegistrationToken());
 			}
 		} catch (EntityNotFoundException e) {
 			e.printStackTrace();
