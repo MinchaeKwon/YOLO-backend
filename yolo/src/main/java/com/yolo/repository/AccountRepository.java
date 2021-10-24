@@ -1,5 +1,6 @@
 package com.yolo.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,6 @@ public interface AccountRepository  extends JpaRepository<Account, Long> {
 	
 	// 회원정보 삭제
 	int deleteBySocialIdAndType(String socialId, String type);
+	
+	List<Account> findByRegistrationToken(String registrationToken);
 }

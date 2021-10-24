@@ -193,6 +193,19 @@ public class JwtUserDetailsService implements UserDetailsService {
 	// 사용자 토큰 수정 -> FCM에 사용
 	@Transactional
 	public void modifyRegistrationToken(String token, Account account) {
+		List<Account> accountList = accountRepository.findByRegistrationToken(token);
+		
+		for (Account a : accountList) {
+			// 현재 로그인한 사용자를 제외하고 같은 registrationToken을 가지고 있는 사용자의 토큰을 삭제함
+			// 한 디바이스에서 여러 계정 로그인 시, 토큰이 동일하기 때문에 해주는 것
+			if (a.getId() != account.getId()) {
+				System.out.println(1111);
+				a.setRegistrationToken(null);
+				accountRepository.save(a);
+			}
+		}
+		
+		System.out.println(2222);
 		account.setRegistrationToken(token);
 		accountRepository.save(account);
 	}
