@@ -55,6 +55,7 @@ public class FCMService {
         JSONObject jsonValue = new JSONObject();
         jsonValue.put("title", "게시글 댓글 알림");
         jsonValue.put("content", "회원님의 게시글에 댓글이 작성되었습니다.");
+        jsonValue.put("action", "toCommunity");
 
         JSONObject jsonData = new JSONObject();
         jsonData.put("token", registrationToken);
@@ -95,6 +96,7 @@ public class FCMService {
        JSONObject jsonValue = new JSONObject();
        jsonValue.put("title", "좋아요 알림");
        jsonValue.put("content", nickname + "님이 회원님의 게시글을 좋아합니다.");
+       jsonValue.put("action", "toCommunity");
 
        JSONObject jsonData = new JSONObject();
        jsonData.put("token", registrationToken);
