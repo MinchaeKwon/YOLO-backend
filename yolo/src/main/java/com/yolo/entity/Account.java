@@ -69,14 +69,15 @@ public class Account implements UserDetails {
 	@OneToOne(cascade = CascadeType.ALL, mappedBy="account", orphanRemoval=true)
     private MagazineSubscribe subscribe;
 	
+	@Column(name="push")
 	private boolean push;
 	
 	@Builder
-	public Account(String socialId, String type, String auth, String nickname) {
+	public Account(String socialId, String type, String nickname) {
 		this.socialId = socialId;
 		this.type = type;
-		this.auth = auth;
 		this.nickname = nickname;
+		this.auth = "ROLE_USER";
 		this.push = true;
 	}
 	

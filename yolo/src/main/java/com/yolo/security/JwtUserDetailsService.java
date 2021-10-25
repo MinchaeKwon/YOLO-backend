@@ -67,8 +67,12 @@ public class JwtUserDetailsService implements UserDetailsService {
 	// 회원정보 저장
 	@Transactional
 	public Long save(AccountDto infoDto) throws IOException {
-		Long accountId = accountRepository.save(Account.builder().socialId(infoDto.getSocialId()).type(infoDto.getType()).auth("ROLE_USER")
-				.nickname(infoDto.getNickname()).build()).getId();
+		Long accountId = accountRepository.save(
+				Account.builder()
+				.socialId(infoDto.getSocialId())
+				.type(infoDto.getType())
+				.nickname(infoDto.getNickname())
+				.build()).getId();
 		
 		return accountId;
 	}
