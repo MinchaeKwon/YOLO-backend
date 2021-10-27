@@ -4,11 +4,11 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="tour")
+@Table(name="tour_place")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tour {
+public class TourPlace {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false)

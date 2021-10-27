@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="place")
+@Table(name="recommend_place")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor

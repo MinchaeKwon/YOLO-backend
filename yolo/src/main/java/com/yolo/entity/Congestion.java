@@ -5,7 +5,7 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="trip_congestion")
+@Table(name="tour_place_congestion")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor

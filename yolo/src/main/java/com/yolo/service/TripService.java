@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 
 import com.yolo.dto.TripDto;
 import com.yolo.entity.Congestion;
-import com.yolo.entity.Tour;
+import com.yolo.entity.TourPlace;
 import com.yolo.repository.CongestionRepository;
 import com.yolo.repository.TourRepository;
 
@@ -72,7 +72,7 @@ public class TripService {
 		for (Congestion c : conList) {
 			int contentId = c.getContentId();
 			
-			Tour tour = tourRepo.findByContentId(contentId).orElseThrow();
+			TourPlace tour = tourRepo.findByContentId(contentId).orElseThrow();
 			
 			result.add(new TripDto(tour.getContentId(), tour.getContentTypeId(), tour.getTitle(), tour.getAddress(), 
 					tour.getImageUrl(), tour.getThumbnail(), c.getCongestion() + 1));
