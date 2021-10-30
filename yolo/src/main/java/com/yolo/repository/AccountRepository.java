@@ -16,6 +16,8 @@ public interface AccountRepository  extends JpaRepository<Account, Long> {
 	// SocialId에 해당하는 회원이 있는지 확인
 	Optional<Account> findBySocialId(String socialId);
 	
+	Boolean existsBySocialId(String socialId);
+	
 	// 닉네임 중복 확인
 	Boolean existsByNickname(String nickname);
 	

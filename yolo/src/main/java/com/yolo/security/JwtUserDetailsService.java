@@ -67,14 +67,20 @@ public class JwtUserDetailsService implements UserDetailsService {
 	// 회원정보 저장
 	@Transactional
 	public Long save(AccountDto infoDto) throws IOException {
-		Long accountId = accountRepository.save(
-				Account.builder()
-				.socialId(infoDto.getSocialId())
-				.type(infoDto.getType())
-				.nickname(infoDto.getNickname())
-				.build()).getId();
+		boolean exist = accountRepository.existsBySocialId(infoDto.getSocialId());
 		
-		return accountId;
+		if (exist) {
+			return null;
+		} else {
+			Long accountId = accountRepository.save(
+					Account.builder()
+					.socialId(infoDto.getSocialId())
+					.type(infoDto.getType())
+					.nickname(infoDto.getNickname())
+					.build()).getId();
+			
+			return accountId;
+		}
 	}
 	
 	// 사용자의 id로 사용자 정보 가져오기

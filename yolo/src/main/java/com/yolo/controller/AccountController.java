@@ -46,14 +46,20 @@ public class AccountController {
 	// 회원정보 저장 -> socialId, type, nickname
 	@PostMapping(value = "/signup")
 	public ResponseEntity<?> signup(@ModelAttribute AccountDto info) {
+		Long result;
+		
 		try {
-			userDetailService.save(info);
+			result = userDetailService.save(info);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ErrorResponse("회원가입을 하는 도중 오류가 발생했습니다.", 500));
 		}
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(new Response("회원가입을 성공적으로 완료했습니다.", 200));
+		
+		if (result != null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(new Response("회원가입을 성공적으로 완료했습니다.", 200));		
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("이미 존재하는 회원입니다.", 500));
+		}
 	}
 
 	// 소셜 로그인
